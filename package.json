@@ -1,0 +1,12 @@
+{
+	"name": "iris",
+	"description" : "DNS management console for PowerDNS",
+	"license": "Apache-2.0",
+	"version" : "0.0.1",
+	"dependencies" : {
+		"express" : "4.0.0"
+	},
+	"devDependencies" : {
+		"nodemon" : "1.0.17"
+	}
+}
