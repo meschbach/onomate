@@ -1,0 +1,21 @@
+{
+  "name": "onomate",
+  "version": "0.0.1",
+  "authors": [
+    "Mark Eschbach <meschbach@gmail.com>"
+  ],
+  "description": "Your friendly DNS manager",
+  "main": "client/application.js",
+  "license": "Apache-2.0",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.16"
+  }
+}
