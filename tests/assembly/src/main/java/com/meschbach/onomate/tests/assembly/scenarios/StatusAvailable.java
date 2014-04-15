@@ -26,9 +26,13 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
+ * Given I am an authorized system agent
+ * When I request the status resource
+ * And the service is running
+ * Then I expect the status to state it is running
  *
- * @author meschbach
- * @version 0.0.1
+ * @author Mark Eschbach <meschbach@gmail.com>
+ * @version 0.0.2
  * @since 0.0.1
  */
 public class StatusAvailable {
