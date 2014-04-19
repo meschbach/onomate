@@ -27,8 +27,9 @@ function redirect( url ){
 
 function onomate_express_assembly( application, a_context ){
 	var context = a_context ? a_context : ""; 
+	application.get( context + "/status", redirect( "/status.html" ) ); 
+	application.use( context + "/wui/bower", connect.static( "bower_components/" )  ); 
 	application.use( context, connect.static( "browser/" ) );
-	application.get( "/status", redirect( "/status.html" ) ); 
 }
 
 var express_application = express();

@@ -15,15 +15,8 @@
  */
 package com.meschbach.onomate.tests.assembly.scenarios;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import static org.testng.Assert.*;
 
 /**
  * Given I am an authorized system agent
@@ -45,44 +38,21 @@ public class StatusAvailable {
         this.deployedURL = deployedURL;
     }
 
-    private void gotoStatusPage() {
-        driver.get(deployedURL+"/status");
-    }
-
     public void systemRunning() {
-        gotoStatusPage();
-        String text = waitOnTextOf(By.id("system-status"));
-        assert text.equals("Running");
+        OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
+        String text = assembly.gotoStatus().status();
+        assertEquals(text, "Running");
     }
-    
-    private String waitOnTextOf(By selector){
-        WebDriverWait wait = new WebDriverWait(driver,2);
-        wait.until(ExpectedConditions.presenceOfElementLocated(selector));
 
-        WebElement element = driver.findElement(selector);
-        return element.getText();
-    }
 
     public static void main(String arguments[]) {
-        final String deployedURL = "http://localhost:9000";
-        final String webDriverHost = "http://127.0.0.1:9515";
-        try {
-            WebDriver driver = buildDriver(webDriverHost);
-            try {
-                StatusAvailable statusScenarios = new StatusAvailable(driver, deployedURL);
-                statusScenarios.systemRunning();
-            }finally{
-                driver.quit();
+        AcceptanceTestRunner runner = new AcceptanceTestRunner( arguments );
+        runner.run( new AcceptanceScenario() {
+
+            public void run(WebDriver driver, String deployedURL)  throws Exception {
+                    StatusAvailable statusScenarios = new StatusAvailable(driver, deployedURL);
+                    statusScenarios.systemRunning();                
             }
-        }catch(Throwable t){
-            t.printStackTrace();
-        }
-    }
-    
-    private static WebDriver buildDriver(final String webDriverHost) throws MalformedURLException{
-        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-        URL hostURL = new URL(webDriverHost);
-        WebDriver driver = new RemoteWebDriver(hostURL, capabilities);
-        return driver;
+        });
     }
 }

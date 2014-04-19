@@ -1,0 +1,42 @@
+<html>
+	<head>
+		<script src='bower/angular/angular.js'> </script>
+		<script src='wui.js'> </script>
+	</head>
+	<body ng-app="Onomate">
+		<div id='zones' ng-controller="ZonesPresenter">
+			<table>
+				<thead>
+					<tr>
+						<th>Zone</th>
+						<th>Name Server</th>
+						<th>Administrator</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ng-repeat="zone in zones">
+						<td>{{zone.fqdn}}</td>
+						<td>{{zone.nameServer}}</td>
+						<td>{{zone.administrator}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div id='new-zone' ng-controller="NewZone">
+			<form name="soa">
+			<h3>Create new zone</h3>
+				<dl>
+					<dt>Zone</dt>
+					<dd><input ng-model="fqdn" /></dd>
+
+					<dt>Name Server</dt>
+					<dd><input ng-model="nameServer" /></dd>
+
+					<dt>Administrator</dt>
+					<dd><input ng-model="administrator" /></dd>
+				</dl>
+				<button ng-click="addZone()">Add Zone</button>
+			</form>
+		</div>
+	</body>
+</html>
