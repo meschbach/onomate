@@ -5,7 +5,9 @@
 	"version" : "0.0.1",
 	"dependencies" : {
 		"express" : "4.0.0",
-		"connect" : "2.14.4"
+		"connect" : "2.14.4",
+		"pg" : "3.0.3",
+		"yargs" : "1.2.1"
 	},
 	"devDependencies" : {
 		"nodemon" : "1.0.17",

@@ -18,6 +18,7 @@ package com.meschbach.onomate.tests.assembly.scenarios;
 
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.Authority;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.Dashboard;
+import java.util.UUID;
 import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.*;
 
@@ -40,14 +41,17 @@ public class CreateAuthority {
     }
     
     public void run(){
-        final String zoneName = "soa.test";
-        final String nameServer = "ns.soa.test";
-        final String contactEmail = "bender.soa.test";
+        final UUID randomUUID = UUID.randomUUID();
+        final String id = randomUUID.toString();
+        final String zoneName = "soa-"+ id + ".assembly-tests.onomate.test";
+        final String nameServer = "ns-"+id +".assembly-tests.onomate.test";
+        final String contactEmail = "mail-" +id +"assembly-test.soa.test";
 
         OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
         Dashboard dashboard = assembly.gotoLanding().authenticate();
         dashboard.newAuthority(zoneName, nameServer, contactEmail);
         Authority authority = dashboard.authorityByZone(zoneName);
+        authority.waitOnPersisted();
         assertEquals(authority.zone(), zoneName);
         assertEquals(authority.nameServer(), nameServer);
         assertEquals(authority.administrator(), contactEmail);

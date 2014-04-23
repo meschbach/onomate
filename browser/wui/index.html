@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<script src='bower/angular/angular.js'> </script>
+		<script src='bower/angular-resource/angular-resource.js'> </script>
 		<script src='wui.js'> </script>
 	</head>
 	<body ng-app="Onomate">
@@ -11,6 +12,8 @@
 						<th>Zone</th>
 						<th>Name Server</th>
 						<th>Administrator</th>
+						<th>Status</th>
+						<th>Actions</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -18,6 +21,10 @@
 						<td>{{zone.fqdn}}</td>
 						<td>{{zone.nameServer}}</td>
 						<td>{{zone.administrator}}</td>
+						<td>{{zone.state}}</td>
+						<td>
+							<button ng-click="deleteZone(zone)">Delete</button>
+						</td>
 					</tr>
 				</tbody>
 			</table>

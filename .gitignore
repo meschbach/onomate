@@ -3,3 +3,6 @@ bower_components/
 tests/assembly/target/
 *.iml
 .idea
+*.swp
+*.swo
+service/config.js

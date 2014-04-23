@@ -16,26 +16,34 @@
 var express = require( "express" );
 var connect = require( "connect" );
 
-function redirect( url ){
-	return function( request, response ){
-		response.writeHead( 302, {
-			'Location' : url
-		});
-		response.end();
+var pgStorage = require( __dirname + "/pg-storage" );
+var webApp = require( __dirname + "/web-application" );
+
+/*
+ * Figure out the configuration file
+ */
+var config = (function(){
+	var yargs = require( "yargs" ).argv;
+	var result;
+	if( yargs.config ){
+		result = require( yargs.config );
+	} else {
+		result = {};
 	}
-}
+	return result;
+})();
 
-function onomate_express_assembly( application, a_context ){
-	var context = a_context ? a_context : ""; 
-	application.get( context + "/status", redirect( "/status.html" ) ); 
-	application.use( context + "/wui/bower", connect.static( "bower_components/" )  ); 
-	application.use( context, connect.static( "browser/" ) );
-}
-
+/*
+ * Driving Application
+ */
 var express_application = express();
 express_application.use( connect.logger('tiny') );
 
-onomate_express_assembly( express_application );
+var storageEngine = pgStorage.createEngine( config.storage || {} );
+
+webApp.assemble( express_application, {
+	storage: storageEngine
+} );
 
 var port = 9000;
 express_application.listen( port, function(){

@@ -92,11 +92,11 @@ public class OnomateAssembly {
             final By soaContainerSelector = By.id("new-zone");
 
             waitOn(soaContainerSelector);
-            WebElement conatiner = driver.findElement(soaContainerSelector);
-            driver.findElement(By.xpath(".//input[@ng-model = 'fqdn']")).sendKeys(authorityName);
-            driver.findElement(By.xpath(".//input[@ng-model = 'nameServer']")).sendKeys(nameServer);
-            driver.findElement(By.xpath(".//input[@ng-model= 'administrator']")).sendKeys(contactEmail);
-            driver.findElement(By.tagName("button")).click();
+            WebElement container = driver.findElement(soaContainerSelector);
+            container.findElement(By.xpath(".//input[@ng-model = 'fqdn']")).sendKeys(authorityName);
+            container.findElement(By.xpath(".//input[@ng-model = 'nameServer']")).sendKeys(nameServer);
+            container.findElement(By.xpath(".//input[@ng-model= 'administrator']")).sendKeys(contactEmail);
+            container.findElement(By.tagName("button")).click();
             return this;
         }
 
@@ -112,6 +112,7 @@ public class OnomateAssembly {
         public String zone() ;
         public String nameServer() ;
         public String administrator();
+        public void waitOnPersisted();
     }
     
     public class RowZoneAuthority implements Authority{
@@ -131,6 +132,10 @@ public class OnomateAssembly {
 
         public String administrator() {
             return container.findElements(By.tagName("td")).get(2).getText();
+        }
+
+        public void waitOnPersisted(){
+            waitOn(By.xpath("./descendant::td[text() = 'Persisted']"));
         }
     }
 }

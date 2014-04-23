@@ -1,4 +1,4 @@
-var onomate = angular.module( "Onomate", [] );
+var onomate = angular.module( "Onomate", [ "ngResource" ] );
 
 
 onomate.factory( "EventMultiplexer", [ function( EventQueue ){
@@ -55,36 +55,98 @@ onomate.factory( "EventMultiplexer", [ function( EventQueue ){
 	return new Multiplexer();
 }]);
 
-onomate.service( "AuthorityZones", [ "EventMultiplexer", function( events ){
-	var zones = [];
+onomate.service( "AuthorityZones", [ "EventMultiplexer", "$resource", function( events, $resource ){
+	var self = this;
+	this.zones = [];
 
-	this.addZone = function( prototype ){
+	var StartOfAuthority = $resource('/rest/records/:fqdn', 
+		{fqdn: '@fqdn'},
+			{'save': {method: 'put'}
+			});
+
+	this.createZone = function( prototype ){
 		var zone = {
 			fqdn: prototype.fqdn,
 			nameServer: prototype.nameServer,
-			administrator: prototype.administrator
+			administrator: prototype.administrator,
+			state: 'creating'
 		};
-		zones.push( zone );
+
+		this.addZone( zone );
+		/*
+		 * Post the request
+		 */
+		var record = new StartOfAuthority({
+			fqdn: zone.fqdn,
+			ns: zone.nameServer,
+			admin: zone.administrator
+		});	
+		record.$save( function(){
+			zone.state = 'Persisted';
+		} );
+	}
+
+	this.addZone = function( zone ){
+		this.zones.push( zone );
+
+		/*
+		 * Notify the UI we have a new event
+		 */
 		events.emit( 'new-zone', zone );
 	}
 
 	this.on = events.on.bind(events);
+
+	(function start(){
+		StartOfAuthority.query( function( all ){
+			all.forEach( function( zone ){
+				var record = {
+					fqdn: zone.fqdn,
+					nameServer: zone.ns,
+					administrator: zone.admin,
+					state: 'importing'
+				}
+				self.addZone( record );
+				record.state = 'Persisted';
+			});
+		});
+	})();
+
+	this.delete = function( fqdn ){
+		var self = this;
+		var resource = new StartOfAuthority({ fqdn: fqdn });
+		resource.$delete( function(){
+			self.zones = self.zones.filter( function( element ){
+				return element.fqdn != fqdn;
+			});
+			events.emit( 'deleted-zone', fqdn );
+		});
+	}
+
 	return this;
 }]);
 
 onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $scope, authorities ){
 	$scope.zones = [];
 
-	authorities.on('new-zone', function( zone ){
+	var newZoneListener = authorities.on('new-zone', function( zone ){
 		$scope.zones.push( zone );
 	});
+	authorities.on('deleted-zone', function( zone ){
+		$scope.zones = authorities.zones;
+	});
+
+	$scope.deleteZone = function( target ){
+		authorities.delete( target.fqdn );
+	}
 
 	$scope.$on('$destroy', function(){
+		newZoneListener.remove();
 	});
 }]);
 
 onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, authorities ){
 	$scope.addZone = function(){
-		authorities.addZone( $scope );
+		authorities.createZone( $scope );
 	}
 }]);
