@@ -56,8 +56,7 @@ public class OnomateAssembly {
             WebDriverWait wait = new WebDriverWait(driver, 2);
             wait.until(ExpectedConditions.presenceOfElementLocated(selector));
         } catch (TimeoutException te) {
-            //TODO: Determine a better exception which reveals the actual locator
-            throw new UnsupportedOperationException("Unable to locate " + selector.toString(), te);
+            throw new WaitTimeoutException("Unable to locate " + selector.toString(), te);
         }
     }
 
@@ -136,6 +135,21 @@ public class OnomateAssembly {
 
         public void waitOnPersisted(){
             waitOn(By.xpath("./descendant::td[text() = 'Persisted']"));
+        }
+    }
+    
+    static class WaitTimeoutException extends RuntimeException {
+
+        public WaitTimeoutException(String message) {
+            super(message);
+        }
+
+        public WaitTimeoutException(String message, Throwable cause) {
+            super(message, cause);
+        }
+
+        public WaitTimeoutException(Throwable cause) {
+            super(cause);
         }
     }
 }

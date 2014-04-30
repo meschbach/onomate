@@ -15,11 +15,16 @@
  */
 package com.meschbach.onomate.tests.assembly.scenarios;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.remote.ScreenshotException;
 
 /**
  *
@@ -40,6 +45,8 @@ public class AcceptanceTestRunner {
             WebDriver driver = buildDriver(webDriverHost);
             try {
                 scenario.run(driver, deployedURL);
+            } catch (OnomateAssembly.WaitTimeoutException problem) {
+                captureExceptionScreenshot(problem);
             } finally {
                 driver.quit();
             }
@@ -48,10 +55,42 @@ public class AcceptanceTestRunner {
         }
     }
 
+    private void captureExceptionScreenshot(OnomateAssembly.WaitTimeoutException problem) {
+        problem.printStackTrace(System.err);
+        /*
+         * Scan for the screenshot exception
+         */
+        Throwable previous, next = problem;
+        do {
+            if( next instanceof ScreenshotException ){
+                recordScreenshot((ScreenshotException)next);
+            }
+            previous = next;
+            next = previous.getCause();
+        } while(previous != next && next != null);
+    }
+    
+    private void recordScreenshot(ScreenshotException information){
+        String fileName = "screenshot-"+ System.currentTimeMillis()+".png";
+        System.out.println("Capturing screenshot to "+fileName);
+        String base64 = information.getBase64EncodedScreenshot();
+        byte pngData[] = OutputType.BYTES.convertFromBase64Png(base64);
+        try {
+            FileOutputStream output = new FileOutputStream(fileName, false);
+            output.write(pngData);
+            output.close();
+        } catch (IOException ioe) {
+            throw new IllegalStateException("Unable to write screenshot", ioe);
+        }        
+    }
+
     private WebDriver buildDriver(final String webDriverHost) throws MalformedURLException {
-        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
+        DesiredCapabilities capabilities = DesiredCapabilities.phantomjs();
         URL hostURL = new URL(webDriverHost);
-        WebDriver driver = new RemoteWebDriver(hostURL, capabilities);
+        RemoteWebDriver driver = new RemoteWebDriver(hostURL, capabilities);
+        driver.getErrorHandler().setIncludeServerErrors(true);
+        driver.setLogLevel(Level.ALL);
+        
         return driver;
     }
 }
