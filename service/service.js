@@ -28,7 +28,9 @@ var config = (function(){
 	var yargs = require( "yargs" ).argv;
 	var result;
 	if( yargs.config ){
-		result = require( yargs.config );
+		var configFile = yargs.config;
+		console.log("Loading configuration ", configFile);
+		result = require( configFile );
 	} else {
 		result = {};
 	}
