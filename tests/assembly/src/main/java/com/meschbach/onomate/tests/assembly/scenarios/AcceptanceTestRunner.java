@@ -30,7 +30,7 @@ import org.openqa.selenium.remote.ScreenshotException;
  *
  * @author Mark Eschbach <meschbach@gmail.com>
  * @since 0.0.2
- * @version 0.0.1
+ * @version 0.1.1
  */
 public class AcceptanceTestRunner {
 
@@ -53,6 +53,8 @@ public class AcceptanceTestRunner {
     public void run(AcceptanceScenario scenario) {
         try {
             runUngarded(scenario);
+        } catch (OnomateAssembly.WaitTimeoutException problem) {
+            captureExceptionScreenshot(problem);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -69,8 +71,6 @@ public class AcceptanceTestRunner {
         WebDriver driver = buildDriver(webDriverHost);
         try {
             scenario.run(driver, deployedURL);
-        } catch (OnomateAssembly.WaitTimeoutException problem) {
-            captureExceptionScreenshot(problem);
         } finally {
             driver.quit();
         }
