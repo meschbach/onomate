@@ -6,3 +6,4 @@ tests/assembly/target/
 *.swp
 *.swo
 service/config.js
+/tests/systems/target/
