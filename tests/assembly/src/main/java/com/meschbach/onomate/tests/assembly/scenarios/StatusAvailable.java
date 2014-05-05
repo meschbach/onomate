@@ -28,31 +28,19 @@ import static org.testng.Assert.*;
  * @version 0.0.2
  * @since 0.0.1
  */
-public class StatusAvailable {
+public class StatusAvailable implements AcceptanceScenario{
 
-    private final WebDriver driver;
-    private final String deployedURL;
-
-    public StatusAvailable(WebDriver driver, String deployedURL) {
-        this.driver = driver;
-        this.deployedURL = deployedURL;
+    public StatusAvailable() {
     }
 
-    public void systemRunning() {
+    public void run(WebDriver driver, String deployedURL) throws Exception {
         OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
         String text = assembly.gotoStatus().status();
         assertEquals(text, "Running");
     }
 
-
     public static void main(String arguments[]) {
         AcceptanceTestRunner runner = new AcceptanceTestRunner( arguments );
-        runner.run( new AcceptanceScenario() {
-
-            public void run(WebDriver driver, String deployedURL)  throws Exception {
-                    StatusAvailable statusScenarios = new StatusAvailable(driver, deployedURL);
-                    statusScenarios.systemRunning();                
-            }
-        });
+        runner.run(new StatusAvailable());
     }
 }

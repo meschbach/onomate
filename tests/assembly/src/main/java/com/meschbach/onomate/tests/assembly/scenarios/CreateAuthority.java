@@ -31,16 +31,12 @@ import static org.testng.Assert.*;
  * @since 0.0.2
  * @version 0.0.1
  */
-public class CreateAuthority {
-    private final WebDriver driver;
-    private final String deployedURL;
+public class CreateAuthority implements AcceptanceScenario {
 
-    public CreateAuthority( WebDriver driver, String deployedURL ) {
-        this.driver = driver;
-        this.deployedURL = deployedURL;
+    public CreateAuthority( ) {
     }
-    
-    public void run(){
+
+    public void run(WebDriver driver, String deployedURL) throws Exception {
         final UUID randomUUID = UUID.randomUUID();
         final String id = randomUUID.toString();
         final String zoneName = "soa-"+ id + ".assembly-tests.onomate.test";
@@ -59,12 +55,6 @@ public class CreateAuthority {
     
     public static void main( String arguments[] ){
         AcceptanceTestRunner runner = new AcceptanceTestRunner(arguments);
-        runner.run(new AcceptanceScenario() {
-
-            public void run(WebDriver driver, String deployedURL) throws Exception {
-                CreateAuthority authority = new CreateAuthority( driver, deployedURL );
-                authority.run();
-            }
-        });
+        runner.run(new CreateAuthority());
     }
 }

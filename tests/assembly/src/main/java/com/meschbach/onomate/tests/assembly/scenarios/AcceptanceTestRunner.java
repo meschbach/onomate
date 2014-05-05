@@ -37,21 +37,42 @@ public class AcceptanceTestRunner {
     final String deployedURL = "http://localhost:9000";
     final String webDriverHost = "http://127.0.0.1:9515";
 
+    public AcceptanceTestRunner() {
+        this(new String[0]);
+    }
+
     public AcceptanceTestRunner(String arguments[]) {
     }
 
+    /**
+     * Executes the given scenario within a sandbox to preventing exceptional
+     * conditions from leaking out.
+     * 
+     * @param scenario 
+     */
     public void run(AcceptanceScenario scenario) {
         try {
-            WebDriver driver = buildDriver(webDriverHost);
-            try {
-                scenario.run(driver, deployedURL);
-            } catch (OnomateAssembly.WaitTimeoutException problem) {
-                captureExceptionScreenshot(problem);
-            } finally {
-                driver.quit();
-            }
+            runUngarded(scenario);
         } catch (Throwable t) {
             t.printStackTrace();
+        }
+    }
+    
+    /**
+     * Executes the given scenario allowing the client code to handle any
+     * resulting exceptions from the scenario.
+     * 
+     * @param scenario
+     * @throws Exception 
+     */
+    public void runUngarded(AcceptanceScenario scenario) throws Exception {
+        WebDriver driver = buildDriver(webDriverHost);
+        try {
+            scenario.run(driver, deployedURL);
+        } catch (OnomateAssembly.WaitTimeoutException problem) {
+            captureExceptionScreenshot(problem);
+        } finally {
+            driver.quit();
         }
     }
 
