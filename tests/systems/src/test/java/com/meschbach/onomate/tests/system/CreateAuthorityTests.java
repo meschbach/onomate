@@ -54,7 +54,7 @@ public class CreateAuthorityTests {
                 
                 Lookup lookup =  new Lookup(soaBase,Type.SOA);
                 SimpleResolver resolver = new SimpleResolver("localhost");
-                resolver.setPort(9001);
+                resolver.setPort(9101);
                 lookup.setResolver(resolver);
                 lookup.setCache(null);
                 Record[] results = lookup.run();
