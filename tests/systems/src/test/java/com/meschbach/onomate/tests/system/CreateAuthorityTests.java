@@ -60,14 +60,13 @@ public class CreateAuthorityTests {
                 lookup.setResolver(resolver);
                 lookup.setCache(null);
                 Record[] results = lookup.run();
-                System.out.println(lookup.getErrorString());
                 assertEquals(lookup.getResult(), Lookup.SUCCESSFUL, "Resolution Successful");
                 assertNotNull(results);
                 assertEquals(results.length, 1);
                 SOARecord record  = ((SOARecord)results[0]);
-                assertEquals(record.getAdmin().toString(), contactName);
-                assertEquals(record.getHost().toString(), ns);
-                assertEquals(record.getName().toString(), soaBase);
+                assertEquals(record.getAdmin().toString(), contactName+".");
+                assertEquals(record.getHost().toString(), ns+".");
+                assertEquals(record.getName().toString(), soaBase+".");
             }
         });
     }
