@@ -20,6 +20,7 @@ import com.meschbach.onomate.tests.assembly.scenarios.AcceptanceScenario;
 import com.meschbach.onomate.tests.assembly.scenarios.AcceptanceTestRunner;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.Dashboard;
+import java.net.InetAddress;
 import java.security.SecureRandom;
 import org.openqa.selenium.WebDriver;
 import org.testng.annotations.Test;
@@ -53,11 +54,13 @@ public class CreateAuthorityTests {
                 board.authorityByZone(soaBase).waitOnPersisted();
                 
                 Lookup lookup =  new Lookup(soaBase,Type.SOA);
-                SimpleResolver resolver = new SimpleResolver("localhost");
+                SimpleResolver resolver = new SimpleResolver();
+                resolver.setAddress(InetAddress.getLocalHost());
                 resolver.setPort(9101);
                 lookup.setResolver(resolver);
                 lookup.setCache(null);
                 Record[] results = lookup.run();
+                System.out.println(lookup.getErrorString());
                 assertEquals(lookup.getResult(), Lookup.SUCCESSFUL, "Resolution Successful");
                 assertNotNull(results);
                 assertEquals(results.length, 1);
