@@ -179,7 +179,7 @@ function LocateZoneResources( config, fqdn ){
 				return;
 			}
 
-			connection.query( "SELECT records.name, records.type, content FROM records INNER JOIN domains ON records.domain_id = domains.id WHERE domains.name = $1::text AND records.type != 'SOA'", [fqdn], 
+			connection.query( "SELECT records.id, records.name, records.type, content FROM records INNER JOIN domains ON records.domain_id = domains.id WHERE domains.name = $1::text AND records.type != 'SOA'", [fqdn], 
 				function( err, result ){
 					if( err ){
 						self.emit('error',{what: err, when: 'querying reosurces', who: 'LocateZoneResources'});
@@ -189,6 +189,7 @@ function LocateZoneResources( config, fqdn ){
 						} else {
 							var results = result.rows.map( function( row ){
 								return {
+									oid: row.id,
 									host: row.name,
 									type: row.type,
 									data: row.content,
@@ -264,10 +265,14 @@ function CreateResourceRecord( config, record ){
 				console.log( "create error ", error );
 				self.emit( "error", error );
 			}else{
-				connection.query( "INSERT INTO records( \"domain_id\",\"name\", \"type\", \"content\" ) SELECT id as domain_id,  $1::text, $2::text, $3::text FROM domains WHERE name = $4::text",
+				connection.query( "INSERT INTO records( \"domain_id\",\"name\", \"type\", \"content\" ) SELECT id as domain_id,  $1::text, $2::text, $3::text FROM domains WHERE name = $4::text RETURNING records.id",
 					[ record.host, record.type, record.data, record.fqdn ],
 					function( error, result ){
 						if( error ) { done(); self.emit('error', error ); }else{
+							if( result.rowCount != 1 ){
+								self.emit('error', "Expected a single row result, got " + result.rowCount );
+							}
+							record.oid = result.rows[0].id;
 							done();
 							self.emit('done', record);
 						}
@@ -279,6 +284,34 @@ function CreateResourceRecord( config, record ){
 	return this;
 }
 util.inherits( CreateResourceRecord, events.EventEmitter );
+
+function DeleteResourceRecord( config, fqdn, oid ){
+	events.EventEmitter.call( this );
+	var self = this;
+	(function start(){
+		pg.connect( config, function( error, connection, done ){
+			if( error ){
+				console.log( "create error ", error );
+				self.emit( "error", error );
+			}else{
+				connection.query( "DELETE FROM records WHERE id = $1::integer",
+					[ oid ],
+					function( error, result ){
+						if( error ) { done(); self.emit('error', error ); }else{
+							if( result.rowCount != 1 ){
+								console.log("WARNING: expected row count not deleted: ", result);
+							}
+							done();
+							self.emit('done');
+						}
+					});
+			}
+		});
+	})();
+
+	return this;
+}
+util.inherits( DeleteResourceRecord, events.EventEmitter );
 
 function StorageEngine( configuration ){
 	//TODO: Use scoped pool instead of global pool
@@ -297,6 +330,9 @@ function StorageEngine( configuration ){
 	}
 	this.createResourceRecord = function( record ){
 		return new CreateResourceRecord( configuration, record );
+	}
+	this.deleteResourceRecord = function( fqdn, oid ){
+		return new DeleteResourceRecord( configuration, fqdn, oid );
 	}
 	return this;
 }

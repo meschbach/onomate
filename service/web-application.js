@@ -26,6 +26,7 @@ function redirect( url ){
 
 function status_internal_error( response ){
 	return function( problem ){
+		console.log("Unable to complete request: ", problem);
 		response.writeHead( 500, 'Internal error' );
 		response.write( problem.toString() );
 		response.end( problem.stackTrace );
@@ -42,6 +43,13 @@ function status_accepted( response ){
 function status_not_found( repsonse ){
 	return function(){
 		response.writeHead( 404, 'Not Found' );
+		response.end();
+	}
+}
+
+function status_deleted( response ){
+	return function(){
+		response.writeHead( 204, 'Successfully Deleted' );
 		response.end();
 	}
 }
@@ -81,10 +89,7 @@ function WebFacet( config ){
 			response.writeHead( 404, 'No such authority' );
 			response.end();
 		});
-		deletion.on('done', function(){
-			response.writeHead( 204, 'Deleted' );
-			response.end();
-		});
+		deletion.on('done', status_deleted( response ));
 	}
 
 	this.locateAuthority = function( request, response ){
@@ -117,6 +122,15 @@ function WebFacet( config ){
 		});
 	}
 
+	this.deleteResourceRecord = function( request, response ){
+		var fqdn = request.params.authority;
+		var oid = request.params.oid;
+
+		var operation = config.storage.deleteResourceRecord( fqdn, oid );
+		operation.on('error', status_internal_error );
+		operation.on('done', status_deleted( response ));
+	}
+
 	return this;
 }
 
@@ -134,6 +148,7 @@ function express_assembly( application, config ){
 	application.delete( context + "/rest/records/:authority", facet.deleteAuthority );
 
 	application.post( context + "/rest/records/:authority/rr", jsonBodyParser, facet.createResourceRecord );
+	application.delete( context + "/rest/records/:authority/rr/:oid", jsonBodyParser, facet.deleteResourceRecord );
 
 	application.get( context + "/status", redirect( "/status.html" ) ); 
 	application.use( context + "/wui/bower", connect.static( "bower_components/" )  ); 

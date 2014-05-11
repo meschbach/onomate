@@ -96,8 +96,8 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 		{fqdn: '@fqdn'},
 			{'save': {method: 'put'}
 			});
-	var ResourceRecord = $resource("/rest/records/:fqdn/rr/:id",
-		{fqdn: '@fqdn', id: '@id' }
+	var ResourceRecord = $resource("/rest/records/:fqdn/rr/:oid",
+		{fqdn: '@fqdn', oid: '@oid' }
 			);
 
 	this.createZone = function( prototype ){
@@ -165,6 +165,10 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 
 		StartOfAuthority.query({fqdn: fqdn}, function( authority ){
 			var zone = authority[0];
+			zone.resources = zone.resources || [];
+			zone.resources.forEach( function( record ){
+				record.status = 'loaded';
+			});
 			dispatcher.emit( "loaded", zone );
 			dispatcher.emit( "done" );
 		});
@@ -190,7 +194,24 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 		dto.host = record.host;
 		dto.data = record.data;
 		dto.fqdn = record.zone;
-		dto.$save();
+		dto.$save( function( response ){
+			record.oid = response.oid; 
+			record.status = 'Persisted';
+		});
+	}
+
+	this.deleteResource = function( resource ){
+		var fqdn = resource.fqdn || resource.zone;
+		if( !fqdn ){ throw new Error( "Excepted fully qualified domain name or zone as apart of the resource" );}
+		resource.status = 'deleting';
+		var restCall = new ResourceRecord({fqdn: fqdn, oid: resource.oid});
+		restCall.$remove( function(){
+			resource.status = 'deleted';
+			events.emit('resource:deleted', resource );
+		}, function(){
+			resource.status='deletion failed';
+			console.log('Deletion failed', arguments, resource);
+		} );
 	}
 	return this;
 }]);
@@ -240,9 +261,21 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", fu
 			$scope.rr.push(record);
 		}
 	});
+	authorities.on('resource:deleted', function( event ){
+		var fqdn = event.zone || event.fqdn;
+		if( $scope.fqdn == fqdn ){
+			$scope.rr = $scope.rr.filter( function( record ){
+				return record != event;
+			});
+		}
+	});
 
 	$scope.addResource = function( record ){
 		authorities.createResource( $scope.fqdn, record );
+	}
+
+	$scope.deleteResource = function( record ){
+		authorities.deleteResource( record );
 	}
 }]);
 
