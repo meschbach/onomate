@@ -36,15 +36,10 @@ function CreateAuthorityTask( config, record ){
 							var soaContent = record.ns + " " + record.admin + " " + Date.now();
 							connection.query( "INSERT INTO records( \"domain_id\",\"name\", \"type\", \"content\", \"ttl\" ) SELECT id as domain_id,  $3::text,'SOA', $1::text, $2::integer FROM domains WHERE name = $3::text",
 								[ soaContent, 3600, record.fqdn], function( error, result ){
-								if( error ) { done(); self.emit('error', error ); }else{
-									connection.query( "INSERT INTO records( \"domain_id\", \"name\", \"type\", \"content\" ) SELECT id as domain_id, $2::text, 'NS', $1::text FROM domains WHERE name = $2::text",
-										[ record.ns, record.fqdn], function( error, result ){
 											if( error ) { done(); self.emit('error', error ); }else{
 												done();
 												self.emit('done', record);
 											}
-										});
-								}
 								});
 						}
 					});
