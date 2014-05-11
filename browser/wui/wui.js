@@ -1,3 +1,18 @@
+/*
+ * Copyright 2014 Mark Eschbach
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 var onomate = angular.module( "Onomate", [ "ngResource", "ngRoute" ]);
 
 onomate.config(["$routeProvider", function( $routeProvider ){
@@ -13,7 +28,7 @@ onomate.config(["$routeProvider", function( $routeProvider ){
 		.otherwise({ redirectTo: '/authorities' });
 }]);
 
-onomate.factory( "Event", [ function( ){
+onomate.service( "Event", [ function( ){
 	function EventQueue(){
 		var listeners = []; 
 
@@ -52,7 +67,7 @@ onomate.factory( "Event", [ function( ){
 		this.on = function( name, listener ){
 			var queue = events[name];
 			if( !queue ){
-				queue = EventQueue();
+				queue = new EventQueue();
 				events[name] = queue;
 			}
 			return queue.on( listener );
@@ -81,6 +96,9 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 		{fqdn: '@fqdn'},
 			{'save': {method: 'put'}
 			});
+	var ResourceRecord = $resource("/rest/records/:fqdn/rr/:id",
+		{fqdn: '@fqdn', id: '@id' }
+			);
 
 	this.createZone = function( prototype ){
 		var zone = {
@@ -146,7 +164,8 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 		dispatcher.attach_to(this);
 
 		StartOfAuthority.query({fqdn: fqdn}, function( authority ){
-			dispatcher.emit( "loaded", authority[0] );
+			var zone = authority[0];
+			dispatcher.emit( "loaded", zone );
 			dispatcher.emit( "done" );
 		});
 		return this;
@@ -154,6 +173,24 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 
 	this.load_zone = function( fqdn ){
 		return new LoadZoneViaRest( fqdn );
+	}
+
+	this.createResource = function( fqdn, resource ){
+		var record = {
+			type: 'A',
+			host: resource.host,
+			data: resource.data,
+			zone: fqdn,
+			status: 'new'
+		};
+		events.emit( 'new-resource', record);
+
+		var dto = new ResourceRecord();
+		dto.type = record.type;
+		dto.host = record.host;
+		dto.data = record.data;
+		dto.fqdn = record.zone;
+		dto.$save();
 	}
 	return this;
 }]);
@@ -190,19 +227,32 @@ onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, au
 
 
 onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", function( $scope, $routeParams, authorities ){
-	$scope.resources = [];
+	$scope.fqdn = $routeParams.fqdn;
+	$scope.rr = [];
 
-	authorities.load_zone( $routeParams.fqdn ).on('loaded', function( zone ){
-		console.log( zone );
-		$scope.resources = zone.resources;
+	authorities.load_zone( $scope.fqdn ).on('loaded', function( zone ){
+		$scope.rr = zone.resources ? zone.resources : [];
+	});
+	authorities.on('new-resource', function( event ){
+		var fqdn = event.zone;
+		if( $scope.fqdn == fqdn ){
+			var record = event;
+			$scope.rr.push(record);
+		}
 	});
 
-	$scope.addRR = function( type, record ){
-		record.type = type;
-		$scope.resources.push( record ); 
+	$scope.addResource = function( record ){
+		authorities.createResource( $scope.fqdn, record );
 	}
 }]);
 
 onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
+	$scope.record = {};
+
+	$scope.addRR = function( ){
+		$scope.addResource( $scope.record );
+		$scope.record.host = "";
+		$scope.record.data = "";
+	}
 }]);
 

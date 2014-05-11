@@ -1,3 +1,4 @@
+<h2>{{fqdn}}</h2>
 <h3>Resource Records</h3>
 <table id='resource-records'>
 	<thead>
@@ -9,19 +10,19 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr ng-repeat='resource in resources'>
-			<td class='rr-host'>{{resource.host}}</td>
-			<td class='rr-type'>{{resource.type}}</td>
-			<td class='rr-data'>{{resource.data}}</td>
-			<td class='rr-data'>{{resource.status}}</td>
+		<tr ng-repeat='record in rr'>
+			<td class='rr-host'>{{record.host}}</td>
+			<td class='rr-type'>{{record.type}}</td>
+			<td class='rr-data'>{{record.data}}</td>
+			<td class='rr-data'>{{record.status}}</td>
 		</tr>
 	</tbody>
 </table>
 <div ng-controller='CreateResourceRecord' id='rr-wizard'>
 	<h3>Create Resource Record</h3>
 	<form name='a-rr'>
-		Name: <input type='text' class='rr-host' ng-model='a.host'/> 
-		Host: <input type='text' class='rr-data' ng-model='a.data'/>
-		<button name='create-rr' ng-click='addRR("A", a)'>Create A</button>
+		Name: <input type='text' class='rr-host' ng-model='record.host'/> 
+		Host: <input type='text' class='rr-data' ng-model='record.data'/>
+		<button name='create-rr' ng-click='addRR()'>Create A</button>
 	</form>
 </div>

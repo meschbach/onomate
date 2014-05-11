@@ -191,7 +191,8 @@ function LocateZoneResources( config, fqdn ){
 								return {
 									host: row.name,
 									type: row.type,
-									data: row.content
+									data: row.content,
+									fqdn: fqdn
 								};
 							});
 							self.emit('found', results );
@@ -221,6 +222,7 @@ function LocateAuthorityDetails( config, fqdn ){
 		self.emit('error', error );
 	}
 
+//TODO: Find a library which handles this for us, or extract to a library
 	var total = 2;
 	function done_guard(){
 		total--;
@@ -253,6 +255,31 @@ function LocateAuthorityDetails( config, fqdn ){
 }
 util.inherits( LocateAuthorityDetails, events.EventEmitter );
 
+function CreateResourceRecord( config, record ){
+	events.EventEmitter.call( this );
+	var self = this;
+	(function start(){
+		pg.connect( config, function( error, connection, done ){
+			if( error ){
+				console.log( "create error ", error );
+				self.emit( "error", error );
+			}else{
+				connection.query( "INSERT INTO records( \"domain_id\",\"name\", \"type\", \"content\" ) SELECT id as domain_id,  $1::text, $2::text, $3::text FROM domains WHERE name = $4::text",
+					[ record.host, record.type, record.data, record.fqdn ],
+					function( error, result ){
+						if( error ) { done(); self.emit('error', error ); }else{
+							done();
+							self.emit('done', record);
+						}
+					});
+			}
+		});
+	})();
+
+	return this;
+}
+util.inherits( CreateResourceRecord, events.EventEmitter );
+
 function StorageEngine( configuration ){
 	//TODO: Use scoped pool instead of global pool
 
@@ -267,6 +294,9 @@ function StorageEngine( configuration ){
 	}
 	this.findAuthority = function( fqdn ){
 		return new LocateAuthorityDetails( configuration, fqdn );
+	}
+	this.createResourceRecord = function( record ){
+		return new CreateResourceRecord( configuration, record );
 	}
 	return this;
 }

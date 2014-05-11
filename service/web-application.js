@@ -106,6 +106,17 @@ function WebFacet( config ){
 			}
 		});
 	}
+
+	this.createResourceRecord = function( request, response ){
+		var prototype = request.body;
+
+		var operation = config.storage.createResourceRecord( prototype );
+		operation.on('error', status_internal_error );
+		operation.on('done', function( record ){
+			response.json( record );
+		});
+	}
+
 	return this;
 }
 
@@ -121,6 +132,8 @@ function express_assembly( application, config ){
 	application.get( context + "/rest/records/:authority", jsonBodyParser, facet.locateAuthority );
 	application.put( context + "/rest/records/:authority", jsonBodyParser, facet.createAuthority );
 	application.delete( context + "/rest/records/:authority", facet.deleteAuthority );
+
+	application.post( context + "/rest/records/:authority/rr", jsonBodyParser, facet.createResourceRecord );
 
 	application.get( context + "/status", redirect( "/status.html" ) ); 
 	application.use( context + "/wui/bower", connect.static( "bower_components/" )  ); 
