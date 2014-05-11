@@ -1,0 +1,25 @@
+<h3>Resource Records</h3>
+<table id='resource-records'>
+	<thead>
+		<tr>
+			<th>Host</th>
+			<th>Type</th>
+			<th>Data</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr ng-repeat='resource in resources'>
+			<td class='rr-host'>{{resource.host}}</td>
+			<td class='rr-type'>{{resource.type}}</td>
+			<td class='rr-data'>{{resource.data}}</td>
+		</tr>
+	</tbody>
+</table>
+<div ng-controller='CreateResourceRecord' id='rr-wizard'>
+	<h3>Create Resource Record</h3>
+	<form name='a-rr'>
+		Name: <input type='text' class='rr-host' ng-model='a.host'/> 
+		Host: <input type='text' class='rr-data' ng-model='a.data'/>
+		<button name='create-rr' ng-click='addRR("A", a)'>Create A</button>
+	</form>
+</div>

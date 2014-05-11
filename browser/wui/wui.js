@@ -1,7 +1,19 @@
-var onomate = angular.module( "Onomate", [ "ngResource" ] );
+var onomate = angular.module( "Onomate", [ "ngResource", "ngRoute" ]);
 
+onomate.config(["$routeProvider", function( $routeProvider ){
+	$routeProvider
+		.when('/authorities', {
+			templateUrl: 'authorities.html',
+			controller: 'AuthoritiesScreen'
+		})
+		.when('/zone/:fqdn', {
+			templateUrl: 'zone.html',
+			controller: 'ZoneScreen'
+		})
+		.otherwise({ redirectTo: '/authorities' });
+}]);
 
-onomate.factory( "EventMultiplexer", [ function( EventQueue ){
+onomate.factory( "EventMultiplexer", [ function( ){
 	function EventQueue(){
 		var listeners = []; 
 
@@ -126,6 +138,8 @@ onomate.service( "AuthorityZones", [ "EventMultiplexer", "$resource", function( 
 	return this;
 }]);
 
+onomate.controller( "AuthoritiesScreen", [function(){}] );
+
 onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $scope, authorities ){
 	$scope.zones = [];
 
@@ -140,6 +154,9 @@ onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $s
 		authorities.delete( target.fqdn );
 	}
 
+	$scope.details = function( zone ){
+	}
+
 	$scope.$on('$destroy', function(){
 		newZoneListener.remove();
 	});
@@ -150,3 +167,16 @@ onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, au
 		authorities.createZone( $scope );
 	}
 }]);
+
+
+onomate.controller('ZoneScreen', ["$scope", function( $scope ){
+	$scope.resources = [];
+	$scope.addRR = function( type, record ){
+		record.type = type;
+		$scope.resources.push( record ); 
+	}
+}]);
+
+onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
+}]);
+

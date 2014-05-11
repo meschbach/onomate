@@ -1,0 +1,41 @@
+<div id='zones' ng-controller="ZonesPresenter">
+	<table>
+		<thead>
+			<tr>
+				<th>Zone</th>
+				<th>Name Server</th>
+				<th>Administrator</th>
+				<th>Status</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat="zone in zones">
+				<td>{{zone.fqdn}}</td>
+				<td>{{zone.nameServer}}</td>
+				<td>{{zone.administrator}}</td>
+				<td>{{zone.state}}</td>
+				<td>
+					<button ng-click="deleteZone(zone)">Delete</button>
+					<a href='#/zone/{{zone.fqdn}}'>Details</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+<div id='new-zone' ng-controller="NewZone">
+	<form name="soa">
+	<h3>Create new zone</h3>
+		<dl>
+			<dt>Zone</dt>
+			<dd><input type='text' ng-model="fqdn" /></dd>
+
+			<dt>Name Server</dt>
+			<dd><input type='text' ng-model="nameServer" /></dd>
+
+			<dt>Administrator</dt>
+			<dd><input type='text' ng-model="administrator" /></dd>
+		</dl>
+		<button type='button' ng-click="addZone()">Add Zone</button>
+	</form>
+</div>
