@@ -30,10 +30,16 @@ public class AssemblyAcceptanceTests {
         AcceptanceTestRunner runner = new AcceptanceTestRunner();
         runner.runUngarded(new CreateAuthority());
     }
-    
+
     @Test
     public void providesStatus() throws Exception {
         AcceptanceTestRunner runner = new AcceptanceTestRunner();
         runner.runUngarded(new StatusAvailable());
+    }
+
+    @Test
+    public void canCreateARecord() throws Exception {
+        AcceptanceTestRunner runner = new AcceptanceTestRunner();
+        runner.runUngarded(new CreateARecord());
     }
 }
