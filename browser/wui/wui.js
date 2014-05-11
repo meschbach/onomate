@@ -177,7 +177,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 
 	this.createResource = function( fqdn, resource ){
 		var record = {
-			type: 'A',
+			type: resource.type || 'A',
 			host: resource.host,
 			data: resource.data,
 			zone: fqdn,
@@ -248,6 +248,8 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", fu
 
 onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
 	$scope.record = {};
+
+	$scope.types = ["A", "CNAME", "NS"];
 
 	$scope.addRR = function( ){
 		$scope.addResource( $scope.record );

@@ -22,6 +22,7 @@
 	<h3>Create Resource Record</h3>
 	<form name='a-rr'>
 		Name: <input type='text' class='rr-host' ng-model='record.host'/> 
+		Record Type: <select ng-model="record.type" ng-options="type for type in types" class='rr-type'></select>
 		Host: <input type='text' class='rr-data' ng-model='record.data'/>
 		<button name='create-rr' ng-click='addRR()'>Create A</button>
 	</form>
