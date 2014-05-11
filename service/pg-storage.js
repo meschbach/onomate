@@ -91,6 +91,49 @@ function ListAuthorities( config ){
 }
 util.inherits( ListAuthorities, events.EventEmitter );
 
+function LocateAuthority( config, fqdn ){
+	if( fqdn === undefined ){ throw new Error("fqdn is not defined" ); }
+
+	var self = this;
+	events.EventEmitter.call( this );
+
+	(function perform(){
+		pg.connect( config, function( error, connection, done ){
+			if( error ){
+				console.log( "Locate authority error", error); 
+				self.emit('error', error);
+				done();
+				return;
+			}
+
+			connection.query( "SELECT content FROM records WHERE type = 'SOA' and name = $1::text", [fqdn], 
+				function( err, result ){
+					if( err ){
+						self.emit('error', error);
+					}else{
+						if( result.rowCount == 0 ){
+							self.emit('not-found');
+						} else {
+							var results = result.rows.map( function( zone ){
+								var content = zone.content.split( " " );
+								var ns = content[0];
+								var admin = content[1];
+								var record = { fqdn: fqdn, ns: ns, admin: admin };
+								return record;
+							});
+							self.emit('found', results );
+						}
+					}
+					done();
+					self.emit('done');
+			});
+		});
+	})();
+
+	return this;
+}
+util.inherits( LocateAuthority, events.EventEmitter );
+
 function DeleteAuthority( config, fqdn ){
 	if( fqdn === undefined ){ throw new Error("fqdn is not defined" ); }
 
@@ -100,7 +143,7 @@ function DeleteAuthority( config, fqdn ){
 	(function perform(){
 		pg.connect( config, function( error, connection, done ){
 			if( error ){
-				console.log( "create error ", error );
+				console.log( "delete error ", error );
 				self.emit( "error", error );
 			}else{
 				connection.query( "DELETE FROM domains WHERE name = $1::text",
@@ -126,6 +169,95 @@ function DeleteAuthority( config, fqdn ){
 }
 util.inherits( DeleteAuthority, events.EventEmitter );
 
+function LocateZoneResources( config, fqdn ){
+	if( fqdn === undefined ){ throw new Error("fqdn is not defined" ); }
+
+	var self = this;
+	events.EventEmitter.call( this );
+
+	(function perform(){
+		pg.connect( config, function( error, connection, done ){
+			if( error ){
+				console.log( "Locate authority error", error); 
+				self.emit('error', {what: error, when: 'obtaining connection', who: 'LocateZoneResources'});
+				done();
+				return;
+			}
+
+			connection.query( "SELECT records.name, records.type, content FROM records INNER JOIN domains ON records.domain_id = domains.id WHERE domains.name = $1::text AND records.type != 'SOA'", [fqdn], 
+				function( err, result ){
+					if( err ){
+						self.emit('error',{what: err, when: 'querying reosurces', who: 'LocateZoneResources'});
+					}else{
+						if( result.rowCount == 0 ){
+							self.emit('not-found');
+						} else {
+							var results = result.rows.map( function( row ){
+								return {
+									host: row.name,
+									type: row.type,
+									data: row.content
+								};
+							});
+							self.emit('found', results );
+						}
+					}
+					done();
+					self.emit('done');
+			});
+		});
+	})();
+
+	return this;
+}
+util.inherits( LocateZoneResources, events.EventEmitter );
+
+function LocateAuthorityDetails( config, fqdn ){
+	if( fqdn === undefined ){ throw new Error("fqdn is not defined" ); }
+
+	var self = this;
+	events.EventEmitter.call( this );
+
+	var resourceRecords, zone;
+
+	var failed = false;
+	function fail_both( error ){
+		failed = true;
+		self.emit('error', error );
+	}
+
+	var total = 2;
+	function done_guard(){
+		total--;
+		if( total == 0 ){
+			if( !failed ){
+				if( zone ){
+					zone.resources = resourceRecords;
+					self.emit('found', zone );
+				}else{
+					self.emit('not-found');
+				}
+			}
+			self.emit('done');
+		}
+	}
+
+	var resourceLocator = new LocateZoneResources( config, fqdn )
+	.on( 'error', fail_both )
+	.on( 'found', function( resources ){
+		resourceRecords = resources;
+	})
+	.on( 'done', done_guard );
+
+	new LocateAuthority( config, fqdn )
+	.on('error', fail_both )
+	.on('found', function( zoneSummary ){ zone = zoneSummary[0]; })
+	.on('done', done_guard );
+
+	return this;
+}
+util.inherits( LocateAuthorityDetails, events.EventEmitter );
+
 function StorageEngine( configuration ){
 	//TODO: Use scoped pool instead of global pool
 
@@ -137,6 +269,9 @@ function StorageEngine( configuration ){
 	}
 	this.deleteAuthority = function( domain ){
 		return new DeleteAuthority( configuration, domain );
+	}
+	this.findAuthority = function( fqdn ){
+		return new LocateAuthorityDetails( configuration, fqdn );
 	}
 	return this;
 }

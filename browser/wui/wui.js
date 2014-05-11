@@ -13,7 +13,7 @@ onomate.config(["$routeProvider", function( $routeProvider ){
 		.otherwise({ redirectTo: '/authorities' });
 }]);
 
-onomate.factory( "EventMultiplexer", [ function( ){
+onomate.factory( "Event", [ function( ){
 	function EventQueue(){
 		var listeners = []; 
 
@@ -63,12 +63,18 @@ onomate.factory( "EventMultiplexer", [ function( ){
 				queue.emit( event );
 			}
 		}
+		this.attach_to = function( object ){
+			object.on = this.on.bind(this);
+		}
 	}
-	return new Multiplexer();
+	this.Multiplexer = Multiplexer;
+	this.Queue = EventQueue;
+	return this;
 }]);
 
-onomate.service( "AuthorityZones", [ "EventMultiplexer", "$resource", function( events, $resource ){
+onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZones( Event, $resource ){
 	var self = this;
+	var events = new Event.Multiplexer();
 	this.zones = [];
 
 	var StartOfAuthority = $resource('/rest/records/:fqdn', 
@@ -135,6 +141,20 @@ onomate.service( "AuthorityZones", [ "EventMultiplexer", "$resource", function( 
 		});
 	}
 
+	function LoadZoneViaRest( fqdn ){
+		var dispatcher = new Event.Multiplexer();
+		dispatcher.attach_to(this);
+
+		StartOfAuthority.query({fqdn: fqdn}, function( authority ){
+			dispatcher.emit( "loaded", authority[0] );
+			dispatcher.emit( "done" );
+		});
+		return this;
+	}
+
+	this.load_zone = function( fqdn ){
+		return new LoadZoneViaRest( fqdn );
+	}
 	return this;
 }]);
 
@@ -169,8 +189,14 @@ onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, au
 }]);
 
 
-onomate.controller('ZoneScreen', ["$scope", function( $scope ){
+onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", function( $scope, $routeParams, authorities ){
 	$scope.resources = [];
+
+	authorities.load_zone( $routeParams.fqdn ).on('loaded', function( zone ){
+		console.log( zone );
+		$scope.resources = zone.resources;
+	});
+
 	$scope.addRR = function( type, record ){
 		record.type = type;
 		$scope.resources.push( record ); 

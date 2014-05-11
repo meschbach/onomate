@@ -39,6 +39,13 @@ function status_accepted( response ){
 	}
 }
 
+function status_not_found( repsonse ){
+	return function(){
+		response.writeHead( 404, 'Not Found' );
+		response.end();
+	}
+}
+
 function WebFacet( config ){
 	this.createAuthority = function( request, response ){
 		var authority = request.body;
@@ -79,6 +86,26 @@ function WebFacet( config ){
 			response.end();
 		});
 	}
+
+	this.locateAuthority = function( request, response ){
+		var domain = request.params.authority;
+		var locator = config.storage.findAuthority( domain );
+		locator.on('not-found', status_not_found );
+		locator.on('found', function( zone ){
+			response.json( [zone] );
+			response.end();
+		});
+		locator.on('error', function( error ){
+			console.log("Error encountered", error);
+			response.writeHead(500,'Error');
+
+			if( typeof error != String ){
+				response.end( JSON.stringify( error ) );
+			}else{
+				response.end( error );
+			}
+		});
+	}
 	return this;
 }
 
@@ -91,6 +118,7 @@ function express_assembly( application, config ){
 
 	application.get( context + "/rest/records", facet.listAuthorities );
 
+	application.get( context + "/rest/records/:authority", jsonBodyParser, facet.locateAuthority );
 	application.put( context + "/rest/records/:authority", jsonBodyParser, facet.createAuthority );
 	application.delete( context + "/rest/records/:authority", facet.deleteAuthority );
 
