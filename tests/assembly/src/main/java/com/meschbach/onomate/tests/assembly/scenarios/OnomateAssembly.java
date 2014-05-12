@@ -20,6 +20,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -111,7 +112,8 @@ public class OnomateAssembly {
         public String zone() ;
         public String nameServer() ;
         public String administrator();
-        public void waitOnPersisted();
+        public Authority waitOnPersisted();
+        public Zone details();
     }
     
     public class RowZoneAuthority implements Authority{
@@ -133,8 +135,61 @@ public class OnomateAssembly {
             return container.findElements(By.tagName("td")).get(2).getText();
         }
 
-        public void waitOnPersisted(){
+        public Authority waitOnPersisted(){
             waitOn(By.xpath("./descendant::td[text() = 'Persisted']"));
+            return this;
+        }
+        
+        public Zone details(){
+            container.findElement(By.linkText("Details")).click();
+            waitOn(By.id("resource-records"));
+            return new Zone();
+        }
+    }
+    
+    public enum RecordType {
+        A,
+        NS,
+        CNAME
+    }
+
+    public class Zone {
+        public Zone createRecord( final String name, final RecordType type, final String data ){
+            WebElement wizard = driver.findElement(By.id("rr-wizard"));
+            wizard.findElement(By.className("rr-host")).sendKeys(name);
+            WebElement typeElement = wizard.findElement(By.className("rr-type"));
+            Select typeSelector = new Select(typeElement);
+            typeSelector.selectByVisibleText(type.name());
+
+            wizard.findElement(By.className("rr-data")).sendKeys(data);
+            wizard.findElement(By.name("create-rr")).click();
+            return this;
+        }
+        
+        public ResourceRow getResource( final String name ){
+            String xpath = "//table[@id='resource-records']/descendant::tr[ td[contains(@class, 'rr-host') and text() = '"+name+"'] ]";
+            WebElement resourceRow = driver.findElement(By.xpath(xpath));
+            return new  ResourceRow(resourceRow);
+        }
+    }
+    
+    public class ResourceRow {
+        WebElement row;
+
+        public ResourceRow(WebElement row) {
+            this.row = row;
+        }
+        
+        public String host(){
+            return row.findElement(By.className("rr-host")).getText();
+        }
+        
+        public String type(){
+            return row.findElement(By.className("rr-type")).getText();
+        }
+
+        public String value(){
+            return row.findElement(By.className("rr-data")).getText();
         }
     }
     

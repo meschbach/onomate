@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.meschbach.onomate.tests.system;
 
 import com.meschbach.onomate.tests.assembly.scenarios.AcceptanceScenario;
@@ -21,50 +22,57 @@ import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly;
 import java.net.InetAddress;
 import java.security.SecureRandom;
 import org.openqa.selenium.WebDriver;
+import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
-import org.xbill.DNS.Lookup;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Message;
+import org.xbill.DNS.NSRecord;
+import org.xbill.DNS.Name;
+import org.xbill.DNS.Options;
 import org.xbill.DNS.Record;
+import org.xbill.DNS.Section;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
-import static org.testng.Assert.*;
-import org.xbill.DNS.SOARecord;
 
 /**
  *
  * @author Mark Eschbach <meschbach@gmail.com>
+ * @since 0.0.4
+ * @version 1.0.0
  */
-public class CreateAuthorityTests {
-
+public class CreateNSRecordTests {
+    
     @Test
-    public void dnsServerRespondsWithAuthority() throws Exception {
+    public void canResolveRecord() throws Exception {
         AcceptanceTestRunner runner = new AcceptanceTestRunner();
         runner.runUngarded(new AcceptanceScenario() {
 
             public void run(WebDriver driver, String deployedURL) throws Exception {
                 int id = new SecureRandom().nextInt();
                 final String systemTestBase = "system-tests.onomate.test";
-                final String soaBase = "soa-" + id + systemTestBase;
+                final String soaBase = "soa-" + id +"."+ systemTestBase;
                 final String ns = "ns." + soaBase;
                 final String contactName = "admin." + soaBase;
+                final String aTestRecordHost = "record."+soaBase;
+                final String aTestRecordNS = "ns.test";
 
                 OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
                 OnomateAssembly.Dashboard board = assembly.gotoLanding().authenticate().newAuthority(soaBase, ns, contactName);
-                board.authorityByZone(soaBase).waitOnPersisted();
+                board.authorityByZone(soaBase).details().createRecord(aTestRecordHost, OnomateAssembly.RecordType.NS, aTestRecordNS);
 
-                Lookup lookup = new Lookup(soaBase, Type.SOA);
+                Options.set("verbose");
+                
                 SimpleResolver resolver = new SimpleResolver();
                 resolver.setAddress(InetAddress.getLocalHost());
                 resolver.setPort(9101);
-                lookup.setResolver(resolver);
-                lookup.setCache(null);
-                Record[] results = lookup.run();
-                assertEquals(lookup.getResult(), Lookup.SUCCESSFUL, "Resolution Successful");
-                assertNotNull(results);
-                assertEquals(results.length, 1);
-                SOARecord record = ((SOARecord) results[0]);
-                assertEquals(record.getAdmin().toString(), contactName + ".");
-                assertEquals(record.getHost().toString(), ns + ".");
-                assertEquals(record.getName().toString(), soaBase + ".");
+                
+                Record query = Record.newRecord(Name.fromString(aTestRecordHost + "."), Type.NS, DClass.IN);
+                Message question = Message.newQuery(query);
+                Message response = resolver.send(question);
+                Record responses[] = response.getSectionArray(Section.AUTHORITY);
+                NSRecord record = ((NSRecord) responses[0]);
+                assertEquals(record.getName().toString(), aTestRecordHost+ ".");
+                assertEquals(record.getTarget().toString(), aTestRecordNS + ".");
             }
         });
     }
