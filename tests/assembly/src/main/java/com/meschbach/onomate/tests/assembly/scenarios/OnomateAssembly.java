@@ -20,6 +20,7 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 /**
@@ -146,7 +147,24 @@ public class OnomateAssembly {
         }
     }
     
+    public enum RecordType {
+        A,
+        NS
+    }
+
     public class Zone {
+        public Zone createRecord( final String name, final RecordType type, final String data ){
+            WebElement wizard = driver.findElement(By.id("rr-wizard"));
+            wizard.findElement(By.className("rr-host")).sendKeys(name);
+            WebElement typeElement = wizard.findElement(By.className("rr-type"));
+            Select typeSelector = new Select(typeElement);
+            typeSelector.selectByVisibleText(type.name());
+
+            wizard.findElement(By.className("rr-data")).sendKeys(data);
+            wizard.findElement(By.name("create-rr")).click();
+            return this;
+        }
+
         public Zone createARecord( final String name, final String host ){
             WebElement wizard = driver.findElement(By.id("rr-wizard"));
             wizard.findElement(By.className("rr-host")).sendKeys(name);
