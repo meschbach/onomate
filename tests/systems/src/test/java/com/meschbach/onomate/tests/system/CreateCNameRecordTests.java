@@ -24,9 +24,9 @@ import java.security.SecureRandom;
 import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
+import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Message;
-import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Options;
 import org.xbill.DNS.Record;
@@ -37,11 +37,10 @@ import org.xbill.DNS.Type;
 /**
  *
  * @author Mark Eschbach <meschbach@gmail.com>
- * @since 0.0.4
  * @version 1.0.0
+ * @since 0.0.5
  */
-public class CreateNSRecordTests {
-    
+public class CreateCNameRecordTests {
     @Test
     public void canResolveRecord() throws Exception {
         AcceptanceTestRunner runner = new AcceptanceTestRunner();
@@ -54,11 +53,11 @@ public class CreateNSRecordTests {
                 final String ns = "ns." + soaBase;
                 final String contactName = "admin." + soaBase;
                 final String aTestRecordHost = "record."+soaBase;
-                final String aTestRecordNS = "ns.test";
+                final String aRealTestRecord = soaBase;
 
                 OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
                 OnomateAssembly.Dashboard board = assembly.gotoLanding().authenticate().newAuthority(soaBase, ns, contactName);
-                board.authorityByZone(soaBase).details().createRecord(aTestRecordHost, OnomateAssembly.RecordType.NS, aTestRecordNS);
+                board.authorityByZone(soaBase).details().createRecord(aTestRecordHost, OnomateAssembly.RecordType.CNAME, aRealTestRecord);
 
                 Options.set("verbose");
                 
@@ -66,13 +65,13 @@ public class CreateNSRecordTests {
                 resolver.setAddress(InetAddress.getLocalHost());
                 resolver.setPort(9101);
                 
-                Record query = Record.newRecord(Name.fromString(aTestRecordHost + "."), Type.NS, DClass.IN);
+                Record query = Record.newRecord(Name.fromString(aTestRecordHost + "."), Type.CNAME, DClass.IN);
                 Message question = Message.newQuery(query);
                 Message response = resolver.send(question);
-                Record responses[] = response.getSectionArray(Section.AUTHORITY);
-                NSRecord record = ((NSRecord) responses[0]);
+                Record responses[] = response.getSectionArray(Section.ANSWER);
+                CNAMERecord record = ((CNAMERecord) responses[0]);
                 assertEquals(record.getName().toString(), aTestRecordHost+ ".");
-                assertEquals(record.getTarget().toString(), aTestRecordNS + ".");
+                assertEquals(record.getTarget().toString(), aRealTestRecord + ".");
             }
         });
     }
