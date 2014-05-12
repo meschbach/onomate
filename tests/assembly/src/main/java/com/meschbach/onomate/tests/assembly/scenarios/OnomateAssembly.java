@@ -164,14 +164,6 @@ public class OnomateAssembly {
             wizard.findElement(By.name("create-rr")).click();
             return this;
         }
-
-        public Zone createARecord( final String name, final String host ){
-            WebElement wizard = driver.findElement(By.id("rr-wizard"));
-            wizard.findElement(By.className("rr-host")).sendKeys(name);
-            wizard.findElement(By.className("rr-data")).sendKeys(host);
-            wizard.findElement(By.name("create-rr")).click();
-            return this;
-        }
         
         public ResourceRow getResource( final String name ){
             String xpath = "//table[@id='resource-records']/descendant::tr[ td[contains(@class, 'rr-host') and text() = '"+name+"'] ]";

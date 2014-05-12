@@ -18,6 +18,7 @@ package com.meschbach.onomate.tests.system;
 import com.meschbach.onomate.tests.assembly.scenarios.AcceptanceScenario;
 import com.meschbach.onomate.tests.assembly.scenarios.AcceptanceTestRunner;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly;
+import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.RecordType;
 import java.net.InetAddress;
 import java.security.SecureRandom;
 import org.openqa.selenium.WebDriver;
@@ -52,7 +53,7 @@ public class CreateAddressResourceRecordTests {
 
                 OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
                 OnomateAssembly.Dashboard board = assembly.gotoLanding().authenticate().newAuthority(soaBase, ns, contactName);
-                board.authorityByZone(soaBase).details().createARecord(aTestRecordHost, aTestRecordAddress);
+                board.authorityByZone(soaBase).details().createRecord(aTestRecordHost, RecordType.A, aTestRecordAddress);
 
                 Lookup lookup = new Lookup(aTestRecordHost, Type.A);
                 SimpleResolver resolver = new SimpleResolver();

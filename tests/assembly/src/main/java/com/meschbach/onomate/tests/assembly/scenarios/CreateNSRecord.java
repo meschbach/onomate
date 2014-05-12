@@ -35,7 +35,7 @@ public class CreateNSRecord implements AcceptanceScenario{
         final String zoneName = "soa-"+ id + ".assembly-tests.onomate.test";
         final String nameServer = "ns-"+id +".assembly-tests.onomate.test";
         final String contactEmail = "mail-" +id +"assembly-test.soa.test";
-        final String aName = "a."+zoneName;
+        final String recordHost = "record."+zoneName;
         final String recordNameServer = "ns.test";
 
         OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
@@ -43,8 +43,8 @@ public class CreateNSRecord implements AcceptanceScenario{
         dashboard.newAuthority(zoneName, recordNameServer, contactEmail);
         OnomateAssembly.Authority authority = dashboard.authorityByZone(zoneName);
         OnomateAssembly.Zone details = authority.waitOnPersisted().details();
-        OnomateAssembly.ResourceRow row = details.createRecord(aName, RecordType.NS, recordNameServer).getResource(aName);
-        assertEquals(row.host(), aName);
+        OnomateAssembly.ResourceRow row = details.createRecord(recordHost, RecordType.NS, recordNameServer).getResource(recordHost);
+        assertEquals(row.host(), recordHost);
         assertEquals(row.type(), "NS");
         assertEquals(row.value(), recordNameServer);
     }

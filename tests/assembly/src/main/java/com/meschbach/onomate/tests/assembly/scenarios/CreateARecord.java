@@ -16,6 +16,7 @@
 
 package com.meschbach.onomate.tests.assembly.scenarios;
 
+import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.RecordType;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.ResourceRow;
 import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.Zone;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import static org.testng.Assert.*;
  *
  * @author Mark Eschbach <meschbach@gmail.com>
  * @since 0.0.3
- * @version 0.0.2
+ * @version 0.0.3
  */
 public class CreateARecord implements AcceptanceScenario{
 
@@ -47,7 +48,7 @@ public class CreateARecord implements AcceptanceScenario{
         dashboard.newAuthority(zoneName, nameServer, contactEmail);
         OnomateAssembly.Authority authority = dashboard.authorityByZone(zoneName);
         Zone details = authority.waitOnPersisted().details();
-        ResourceRow row = details.createARecord(aName, ipv4Host).getResource(aName);
+        ResourceRow row = details.createRecord(aName, RecordType.A, ipv4Host).getResource(aName);
         assertEquals(row.host(), aName);
         assertEquals(row.type(), "A");
         assertEquals(row.value(), ipv4Host);
