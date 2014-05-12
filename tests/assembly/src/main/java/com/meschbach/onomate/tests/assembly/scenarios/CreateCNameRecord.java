@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 gremlin.
+ * Copyright 2014 Mark Eschbach.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.meschbach.onomate.tests.assembly.scenarios;
 
-import com.meschbach.onomate.tests.assembly.scenarios.OnomateAssembly.RecordType;
 import java.util.UUID;
 import org.openqa.selenium.WebDriver;
 import static org.testng.Assert.assertEquals;
@@ -24,10 +23,10 @@ import static org.testng.Assert.assertEquals;
 /**
  *
  * @author Mark Eschbach <meschbach@gmail.com>
- * @version 0.0.1
- * @since 0.0.4
+ * @version 0.0.4
+ * @since 0.0.5
  */
-public class CreateNSRecord implements AcceptanceScenario{
+public class CreateCNameRecord implements AcceptanceScenario{
 
     public void run(WebDriver driver, String deployedURL) throws Exception {
         final UUID randomUUID = UUID.randomUUID();
@@ -36,17 +35,17 @@ public class CreateNSRecord implements AcceptanceScenario{
         final String nameServer = "ns-"+id +".assembly-tests.onomate.test";
         final String contactEmail = "mail-" +id +"assembly-test.soa.test";
         final String recordHost = "record."+zoneName;
-        final String recordNameServer = "ns.test";
+        final String recordRealName = "wait.test";
 
         OnomateAssembly assembly = new OnomateAssembly(driver, deployedURL);
         OnomateAssembly.Dashboard dashboard = assembly.gotoLanding().authenticate();
-        dashboard.newAuthority(zoneName, recordNameServer, contactEmail);
+        dashboard.newAuthority(zoneName, recordRealName, contactEmail);
         OnomateAssembly.Authority authority = dashboard.authorityByZone(zoneName);
         OnomateAssembly.Zone details = authority.waitOnPersisted().details();
-        OnomateAssembly.ResourceRow row = details.createRecord(recordHost, RecordType.NS, recordNameServer).getResource(recordHost);
+        OnomateAssembly.ResourceRow row = details.createRecord(recordHost, OnomateAssembly.RecordType.CNAME, recordRealName).getResource(recordHost);
         assertEquals(row.host(), recordHost);
-        assertEquals(row.type(), "NS");
-        assertEquals(row.value(), recordNameServer);
+        assertEquals(row.type(), "CNAME");
+        assertEquals(row.value(), recordRealName);
     }
     
     public static void main( String arguments[] ){

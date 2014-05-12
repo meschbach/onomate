@@ -149,7 +149,8 @@ public class OnomateAssembly {
     
     public enum RecordType {
         A,
-        NS
+        NS,
+        CNAME
     }
 
     public class Zone {

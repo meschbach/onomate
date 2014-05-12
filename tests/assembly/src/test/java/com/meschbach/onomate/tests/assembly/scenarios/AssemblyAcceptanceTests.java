@@ -21,7 +21,7 @@ import org.testng.annotations.Test;
  *
  * @author Mark Eschbach <meschbach@gmail.com>
  * @since 0.0.3
- * @version 0.0.5
+ * @version 0.0.6
  */
 public class AssemblyAcceptanceTests {
 
@@ -47,5 +47,11 @@ public class AssemblyAcceptanceTests {
     public void canCreateNSRecord() throws Exception {
         AcceptanceTestRunner runner = new AcceptanceTestRunner();
         runner.runUngarded(new CreateNSRecord());
+    }
+
+    @Test
+    public void canCreateCNAMERecord() throws Exception {
+        AcceptanceTestRunner runner = new AcceptanceTestRunner();
+        runner.runUngarded(new CreateCNameRecord());
     }
 }
