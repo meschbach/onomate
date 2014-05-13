@@ -248,6 +248,8 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", "$
 	$scope.rr = [];
 
 	authorities.load_zone( $scope.fqdn ).on('loaded', function( zone ){
+		$scope.nameServer = zone.ns;
+		$scope.administrator = zone.admin;
 		$scope.rr = zone.resources ? zone.resources : [];
 	});
 	authorities.on('new-resource', function( event ){
