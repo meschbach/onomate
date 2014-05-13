@@ -49,7 +49,7 @@ webApp.assemble( express_application, {
 	storage: storageEngine
 } );
 
-var port = 9000;
+var port = (config.http || {} ).port || 9000;
 express_application.listen( port, function(){
 	console.log( "Running on ", port );
 });
