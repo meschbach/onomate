@@ -25,6 +25,10 @@ onomate.config(["$routeProvider", function( $routeProvider ){
 			templateUrl: 'zone.html',
 			controller: 'ZoneScreen'
 		})
+		.when('/about', {
+			templateUrl: 'about.html',
+			controller: 'AboutScreen'
+		})
 		.otherwise({ redirectTo: '/authorities' });
 }]);
 
@@ -133,7 +137,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 
 	this.on = events.on.bind(events);
 
-	(function start(){
+	this.loadZones = function(){
 		StartOfAuthority.query( function( all ){
 			all.forEach( function( zone ){
 				var record = {
@@ -146,7 +150,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 				record.state = 'Persisted';
 			});
 		});
-	})();
+	}
 
 	this.delete = function( fqdn ){
 		var self = this;
@@ -221,23 +225,19 @@ onomate.controller( "AuthoritiesScreen", [function(){}] );
 onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $scope, authorities ){
 	$scope.zones = [];
 
-	var newZoneListener = authorities.on('new-zone', function( zone ){
+	function listen( to, eventName, callback ){
+		var subscription = to.on(eventName, callback);
+		$scope.$on('$destroy', function(){ subscription.remove(); } );
+	}
+
+	listen( authorities, 'new-zone', function( zone ){
 		$scope.zones.push( zone );
 	});
-	authorities.on('deleted-zone', function( zone ){
+	listen( authorities, 'deleted-zone', function( zone ){
 		$scope.zones = authorities.zones;
 	});
-
-	$scope.deleteZone = function( target ){
-		authorities.delete( target.fqdn );
-	}
-
-	$scope.details = function( zone ){
-	}
-
-	$scope.$on('$destroy', function(){
-		newZoneListener.remove();
-	});
+	
+	authorities.loadZones();
 }]);
 
 onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, authorities ){
@@ -247,11 +247,13 @@ onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, au
 }]);
 
 
-onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", function( $scope, $routeParams, authorities ){
+onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", "$location", function( $scope, $routeParams, authorities, $location ){
 	$scope.fqdn = $routeParams.fqdn;
 	$scope.rr = [];
 
 	authorities.load_zone( $scope.fqdn ).on('loaded', function( zone ){
+		$scope.nameServer = zone.ns;
+		$scope.administrator = zone.admin;
 		$scope.rr = zone.resources ? zone.resources : [];
 	});
 	authorities.on('new-resource', function( event ){
@@ -277,6 +279,10 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", fu
 	$scope.deleteResource = function( record ){
 		authorities.deleteResource( record );
 	}
+	$scope.deleteZone = function(){
+		authorities.delete( $scope.fqdn );
+		$location.path('/authorities');
+	}
 }]);
 
 onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
@@ -289,5 +295,8 @@ onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
 		$scope.record.host = "";
 		$scope.record.data = "";
 	}
+}]);
+
+onomate.controller( 'AboutScreen', ['$scope', function( $scope ){
 }]);
 

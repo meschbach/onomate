@@ -1,33 +1,51 @@
-<h2>{{fqdn}}</h2>
-<h3>Resource Records</h3>
-<table id='resource-records'>
-	<thead>
-		<tr>
-			<th>Host</th>
-			<th>Type</th>
-			<th>Data</th>
-			<th>Status</th>
-			<th>Operations</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr ng-repeat='record in rr'>
-			<td class='rr-host'>{{record.host}}</td>
-			<td class='rr-type'>{{record.type}}</td>
-			<td class='rr-data'>{{record.data}}</td>
-			<td class='rr-data'>{{record.status}}</td>
-			<th class='rr-ops'>
-				<button ng-click='deleteResource(record)'>Delete</button>
-			</th>
-		</tr>
-	</tbody>
-</table>
-<div ng-controller='CreateResourceRecord' id='rr-wizard'>
-	<h3>Create Resource Record</h3>
-	<form name='a-rr'>
-		Name: <input type='text' class='rr-host' ng-model='record.host'/> 
-		Record Type: <select ng-model="record.type" ng-options="type for type in types" class='rr-type'></select>
-		Host: <input type='text' class='rr-data' ng-model='record.data'/>
-		<button name='create-rr' ng-click='addRR()'>Create A</button>
-	</form>
+<div class='panel panel-info'>
+	<div class='panel-heading'> 
+		<h1 class='panel-title'>Zone: {{fqdn}}</h1>
+	</div>
+	<div class='panel panel-default'>
+		<div class='panel-heading'>
+			<h2 class='panel-title'>Details</h2>
+		</div>
+		<div class='panel-body'>
+			<dl class='dl-horizontal'>
+				<dt>Name Server</dt><dd>{{nameServer}}</dd>
+				<dt>Administrator</dt><dd>{{administrator}}</dd>
+			</dl>
+		</div>
+		<div class='panel-footer'>
+			<p>
+				<button ng-click="deleteZone()">Delete</button>
+			</p>
+		</div>
+	</div>
+	<table id='resource-records' class='table table-striped table-hover'>
+		<caption><h3 class='panel-title'>Resource Records</h3></caption>
+		<thead>
+			<tr>
+				<th>Host</th>
+				<th>Type</th>
+				<th>Data</th>
+				<th>Status</th>
+				<th>Operations</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr ng-repeat='record in rr'>
+				<td class='rr-host'>{{record.host}}</td>
+				<td class='rr-type'>{{record.type}}</td>
+				<td class='rr-data'>{{record.data}}</td>
+				<td class='rr-data'>{{record.status}}</td>
+				<th class='rr-ops'>
+					<button ng-click='deleteResource(record)'>Delete</button>
+				</th>
+			</tr>
+			<tr ng-controller='CreateResourceRecord' id='rr-wizard'>
+				<td><input type='text' class='rr-host' ng-model='record.host'/></td>
+				<td><select ng-model="record.type" ng-options="type for type in types" class='rr-type'></select></td>
+				<td><input type='text' class='rr-data' ng-model='record.data'/></td>
+				<td></td>
+				<td><button name='create-rr' ng-click='addRR()'>Create</button></td>
+			</tr>
+		</tbody>
+	</table>
 </div>

@@ -1,41 +1,36 @@
 <div id='zones' ng-controller="ZonesPresenter">
-	<table>
-		<thead>
-			<tr>
-				<th>Zone</th>
-				<th>Name Server</th>
-				<th>Administrator</th>
-				<th>Status</th>
-				<th>Actions</th>
-			</tr>
-		</thead>
-		<tbody>
-			<tr ng-repeat="zone in zones">
-				<td>{{zone.fqdn}}</td>
-				<td>{{zone.nameServer}}</td>
-				<td>{{zone.administrator}}</td>
-				<td>{{zone.state}}</td>
-				<td>
-					<button ng-click="deleteZone(zone)">Delete</button>
-					<a href='#/zone/{{zone.fqdn}}'>Details</a>
-				</td>
-			</tr>
-		</tbody>
-	</table>
-</div>
-<div id='new-zone' ng-controller="NewZone">
-	<form name="soa">
-	<h3>Create new zone</h3>
-		<dl>
-			<dt>Zone</dt>
-			<dd><input type='text' ng-model="fqdn" /></dd>
-
-			<dt>Name Server</dt>
-			<dd><input type='text' ng-model="nameServer" /></dd>
-
-			<dt>Administrator</dt>
-			<dd><input type='text' ng-model="administrator" /></dd>
-		</dl>
-		<button type='button' ng-click="addZone()">Add Zone</button>
-	</form>
+	<div class='panel panel-info'>
+		<div class='panel-heading'>
+			<h1 class='panel-title'>Zones of Authority</h1>
+		</div>
+		<table class='table table-striped table-hover'>
+			<thead>
+				<tr>
+					<th>Zone</th>
+					<th>Name Server</th>
+					<th>Administrator</th>
+					<th>Status</th>
+					<th>Actions</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="zone in zones">
+					<td>{{zone.fqdn}}</td>
+					<td>{{zone.nameServer}}</td>
+					<td>{{zone.administrator}}</td>
+					<td>{{zone.state}}</td>
+					<td>
+						<a href='#/zone/{{zone.fqdn}}'><span class='glyphicon glyphicon-cog'></span> Details</a>
+					</td>
+				</tr>
+				<tr ng-controller="NewZone">
+					<td><input type='text' ng-model="fqdn" /></td>
+					<td><input type='text' ng-model="nameServer" /></td>
+					<td><input type='text' ng-model="administrator" /></td>
+					<td></td>
+					<td><button type='button' ng-click="addZone()">Add Zone</button></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
 </div>
