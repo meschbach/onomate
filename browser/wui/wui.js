@@ -133,7 +133,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 
 	this.on = events.on.bind(events);
 
-	(function start(){
+	this.loadZones = function(){
 		StartOfAuthority.query( function( all ){
 			all.forEach( function( zone ){
 				var record = {
@@ -146,7 +146,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 				record.state = 'Persisted';
 			});
 		});
-	})();
+	}
 
 	this.delete = function( fqdn ){
 		var self = this;
@@ -221,23 +221,22 @@ onomate.controller( "AuthoritiesScreen", [function(){}] );
 onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $scope, authorities ){
 	$scope.zones = [];
 
-	var newZoneListener = authorities.on('new-zone', function( zone ){
+	function listen( to, eventName, callback ){
+		var subscription = to.on(eventName, callback);
+		$scope.$on('$destroy', function(){ subscription.remove(); } );
+	}
+
+	listen( authorities, 'new-zone', function( zone ){
 		$scope.zones.push( zone );
 	});
-	authorities.on('deleted-zone', function( zone ){
+	listen( authorities, 'deleted-zone', function( zone ){
 		$scope.zones = authorities.zones;
 	});
-
+	
 	$scope.deleteZone = function( target ){
 		authorities.delete( target.fqdn );
 	}
-
-	$scope.details = function( zone ){
-	}
-
-	$scope.$on('$destroy', function(){
-		newZoneListener.remove();
-	});
+	authorities.loadZones();
 }]);
 
 onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, authorities ){
