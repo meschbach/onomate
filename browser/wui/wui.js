@@ -25,6 +25,10 @@ onomate.config(["$routeProvider", function( $routeProvider ){
 			templateUrl: 'zone.html',
 			controller: 'ZoneScreen'
 		})
+		.when('/about', {
+			templateUrl: 'about.html',
+			controller: 'AboutScreen'
+		})
 		.otherwise({ redirectTo: '/authorities' });
 }]);
 
@@ -291,5 +295,8 @@ onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
 		$scope.record.host = "";
 		$scope.record.data = "";
 	}
+}]);
+
+onomate.controller( 'AboutScreen', ['$scope', function( $scope ){
 }]);
 
