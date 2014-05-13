@@ -1,6 +1,6 @@
-<h2>{{fqdn}}</h2>
-<h3>Resource Records</h3>
-<table id='resource-records'>
+<h2>Zone: {{fqdn}}</h2>
+<table id='resource-records' class='table'>
+	<caption><h3>Resource Records</h3></caption>
 	<thead>
 		<tr>
 			<th>Host</th>
@@ -20,14 +20,12 @@
 				<button ng-click='deleteResource(record)'>Delete</button>
 			</th>
 		</tr>
+		<tr ng-controller='CreateResourceRecord' id='rr-wizard'>
+			<td><input type='text' class='rr-host' ng-model='record.host'/></td>
+			<td><select ng-model="record.type" ng-options="type for type in types" class='rr-type'></select></td>
+			<td><input type='text' class='rr-data' ng-model='record.data'/></td>
+			<td></td>
+			<td><button name='create-rr' ng-click='addRR()'>Create</button></td>
+		</tr>
 	</tbody>
 </table>
-<div ng-controller='CreateResourceRecord' id='rr-wizard'>
-	<h3>Create Resource Record</h3>
-	<form name='a-rr'>
-		Name: <input type='text' class='rr-host' ng-model='record.host'/> 
-		Record Type: <select ng-model="record.type" ng-options="type for type in types" class='rr-type'></select>
-		Host: <input type='text' class='rr-data' ng-model='record.data'/>
-		<button name='create-rr' ng-click='addRR()'>Create A</button>
-	</form>
-</div>
