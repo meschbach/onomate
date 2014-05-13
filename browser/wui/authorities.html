@@ -17,8 +17,7 @@
 				<td>{{zone.administrator}}</td>
 				<td>{{zone.state}}</td>
 				<td>
-					<button ng-click="deleteZone(zone)">Delete</button>
-					<a href='#/zone/{{zone.fqdn}}'>Details</a>
+					<a href='#/zone/{{zone.fqdn}}'><span class='glyphicon glyphicon-cog'></span> Details</a>
 				</td>
 			</tr>
 			<tr ng-controller="NewZone">

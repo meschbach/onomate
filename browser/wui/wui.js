@@ -233,9 +233,6 @@ onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $s
 		$scope.zones = authorities.zones;
 	});
 	
-	$scope.deleteZone = function( target ){
-		authorities.delete( target.fqdn );
-	}
 	authorities.loadZones();
 }]);
 
@@ -246,7 +243,7 @@ onomate.controller( "NewZone", ["$scope", "AuthorityZones", function( $scope, au
 }]);
 
 
-onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", function( $scope, $routeParams, authorities ){
+onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", "$location", function( $scope, $routeParams, authorities, $location ){
 	$scope.fqdn = $routeParams.fqdn;
 	$scope.rr = [];
 
@@ -275,6 +272,10 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", fu
 
 	$scope.deleteResource = function( record ){
 		authorities.deleteResource( record );
+	}
+	$scope.deleteZone = function(){
+		authorities.delete( $scope.fqdn );
+		$location.path('/authorities');
 	}
 }]);
 
