@@ -1,5 +1,6 @@
 <div id='zones' ng-controller="ZonesPresenter">
-	<table>
+	<table class='table'>
+		<caption><h2>Zones</h2></caption>
 		<thead>
 			<tr>
 				<th>Zone</th>
@@ -20,22 +21,13 @@
 					<a href='#/zone/{{zone.fqdn}}'>Details</a>
 				</td>
 			</tr>
+			<tr ng-controller="NewZone">
+				<td><input type='text' ng-model="fqdn" /></td>
+				<td><input type='text' ng-model="nameServer" /></td>
+				<td><input type='text' ng-model="administrator" /></td>
+				<td></td>
+				<td><button type='button' ng-click="addZone()">Add Zone</button></td>
+			</tr>
 		</tbody>
 	</table>
-</div>
-<div id='new-zone' ng-controller="NewZone">
-	<form name="soa">
-	<h3>Create new zone</h3>
-		<dl>
-			<dt>Zone</dt>
-			<dd><input type='text' ng-model="fqdn" /></dd>
-
-			<dt>Name Server</dt>
-			<dd><input type='text' ng-model="nameServer" /></dd>
-
-			<dt>Administrator</dt>
-			<dd><input type='text' ng-model="administrator" /></dd>
-		</dl>
-		<button type='button' ng-click="addZone()">Add Zone</button>
-	</form>
 </div>
