@@ -22,8 +22,11 @@ exports.http = {
 The configuration file is required(), so you may do whatever environment processing required to produce your configuration.  The storage options are passed directly to the pg library, and any options accepted by pg should be caccepted here.
 
 ### Startup
+```shell
 npm install
+./node_moidules/.bin/bower install
 node service/service.js --config service/config
+```
 
 And launch y'er browser to the port you specified (by default 9000).
 
