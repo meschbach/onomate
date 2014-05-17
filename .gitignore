@@ -7,3 +7,4 @@ tests/assembly/target/
 *.swo
 service/config.js
 /tests/systems/target/
+/database.json
