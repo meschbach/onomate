@@ -1,0 +1,9 @@
+{
+	"dev": {
+		"driver": "pg",
+		"user": "onomate-development",
+		"password" : "onomate-development-password",
+		"host" : "localhost",
+		"database" : "onomate-development"
+	}
+}
