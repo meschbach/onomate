@@ -15,7 +15,7 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="zone in zones">
-					<td>{{zone.fqdn}}</td>
+					<td><a href='#/zone/{{zone.fqdn}}'>{{zone.fqdn}}</a></td>
 					<td>{{zone.nameServer}}</td>
 					<td>{{zone.administrator}}</td>
 					<td>{{zone.state}}</td>
