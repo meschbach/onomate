@@ -6,7 +6,7 @@
 	"dependencies" : {
 		"express" : "4.0.0",
 		"connect" : "2.14.4",
-		"pg" : "3.0.3",
+		"pg" : "3.3.0",
 		"yargs" : "1.2.1"
 	},
 	"devDependencies" : {
