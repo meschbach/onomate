@@ -101,7 +101,7 @@ public class OnomateAssembly {
         }
 
         public Authority authorityByZone( final String zone ) {
-            final By selector = By.xpath("//div[ @id = 'zones']/descendant::tr[td[text()='"+zone+"']]");
+            final By selector = By.xpath("//div[ @id = 'zones']/descendant::tr[td[a[text()='"+zone+"']]]");
             waitOnTextOf(selector);
             WebElement container = driver.findElement(selector);
             return new RowZoneAuthority(container);
