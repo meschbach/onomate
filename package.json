@@ -7,7 +7,7 @@
 		"express" : "4.0.0",
 		"connect" : "2.14.4",
 		"pg" : "3.4.0",
-		"yargs" : "1.2.1"
+		"yargs" : "1.2.6"
 	},
 	"devDependencies" : {
 		"nodemon" : "1.0.17",
