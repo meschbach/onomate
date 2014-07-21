@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * Initial Migration and Schema Setup
  */
 var dbm = require('db-migrate');
 var type = dbm.dataType;

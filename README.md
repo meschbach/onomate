@@ -35,8 +35,12 @@ This is really alpha-quality; but I'll be releasing new features as I need them 
 
 ## Schema
 Only backend currently supported is PostgreSQL.  'cause an Elephant never forgets.
-Install using the sequence of number scripts in orders.
+To install the schema: salt and pepper database.json to taste; then run the following command:
+```shell
+npm install && ./node_modules/.bin/db-migrate up
+```
 
+### Other Storage Mechanisms
 I think it would be great if someone would like to maintain a MySQL storage engine, or possibly one of the NoSQL solutions.
 
 ## License
