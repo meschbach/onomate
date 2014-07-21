@@ -151,7 +151,7 @@ function express_assembly( application, config ){
 	application.delete( context + "/rest/records/:authority/rr/:oid", jsonBodyParser, facet.deleteResourceRecord );
 
 	application.get( context + "/status", redirect( "/status.html" ) ); 
-	application.use( context + "/wui/bower", connect.static( "bower_components/" )  ); 
+	application.use( context + "/bower", connect.static( "bower_components/" )  ); 
 	application.use( context, connect.static( "browser/" ) );
 }
 
