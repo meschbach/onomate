@@ -24,7 +24,7 @@ The configuration file is required(), so you may do whatever environment process
 ### Startup
 ```shell
 npm install
-./node_moidules/.bin/bower install
+./node_modules/.bin/bower install
 node service/service.js --config service/config
 ```
 
