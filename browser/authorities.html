@@ -15,12 +15,12 @@
 			</thead>
 			<tbody>
 				<tr ng-repeat="zone in zones">
-					<td><a href='#/zone/{{zone.fqdn}}'>{{zone.fqdn}}</a></td>
+					<td><a href='zone/{{zone.fqdn}}'>{{zone.fqdn}}</a></td>
 					<td>{{zone.nameServer}}</td>
 					<td>{{zone.administrator}}</td>
 					<td>{{zone.state}}</td>
 					<td>
-						<a href='#/zone/{{zone.fqdn}}'><span class='glyphicon glyphicon-cog'></span> Details</a>
+						<a href='zone/{{zone.fqdn}}'><span class='glyphicon glyphicon-cog'></span> Details</a>
 					</td>
 				</tr>
 				<tr ng-controller="NewZone" id='new-zone'>

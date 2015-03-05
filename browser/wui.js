@@ -15,7 +15,8 @@
  */
 var onomate = angular.module( "Onomate", [ "ngResource", "ngRoute" ]);
 
-onomate.config(["$routeProvider", function( $routeProvider ){
+onomate.config(["$routeProvider", "$locationProvider", function( $routeProvider, $locationProvider ){
+	$locationProvider.html5Mode( true );
 	$routeProvider
 		.when('/authorities', {
 			templateUrl: 'authorities.html',

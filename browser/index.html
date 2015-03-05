@@ -1,7 +1,36 @@
+<!doctype html>
 <html>
 	<head>
+		<base href='/'/>
+		<script src='/bower/angular/angular.js'> </script>
+		<script src='/bower/angular-resource/angular-resource.js'> </script>
+		<script src='/bower/angular-route/angular-route.js'> </script>
+		<script src='/bower/jquery/dist/jquery.js'> </script>
+		<script src='/bower/bootstrap/dist/js/bootstrap.min.js'> </script>
+		<script src='/wui.js'> </script>
+
+		<link rel="stylesheet" href="/bower/bootstrap/dist/css/bootstrap.css" />
+		<style type='text/css'>
+.table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+  background-color: lightblue;
+}
+		</style>
 	</head>
-	<body>
-		<a href='/wui'>Enter</a>
+	<body ng-app="Onomate">
+		<nav class='navbar navbar-default' role='navigation'>
+			<div class='container-fluid'>
+				<div class='navbar-header'>
+					<a class='navbar-brand' href=''>Onomate</a>
+				</div>
+				<ul class='nav navbar-nav navbar-left'>
+					<li><a href='authorities'>Authorities</a></li>
+				</ul>
+				<ul class='nav navbar-nav navbar-right'>
+					<li><a href='about'>About</a></li>
+				</ul>
+			</div>
+		</nav>
+		<div class='container-fluid' ng-view>
+		</div>
 	</body>
 </html>
