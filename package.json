@@ -9,6 +9,7 @@
 		"connect" : "3.3.4",
 		"morgan" : "1.5.1",
 		"passport" : "0.2.1",
+		"passport-http" : "0.2.2",
 		"pg" : "4.3.0",
 		"yargs" : "3.4.5"
 	},
