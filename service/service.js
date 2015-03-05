@@ -17,9 +17,11 @@
  */
 var express = require( "express" );
 var connect = require( "connect" );
+var morgan = require( "morgan" );
 
 var pgStorage = require( __dirname + "/pg-storage" );
 var webApp = require( __dirname + "/web-application" );
+var security = require( __dirname + "/security" );
 
 /*
  * Figure out the configuration file
@@ -41,13 +43,16 @@ var config = (function(){
  * Driving Application
  */
 var express_application = express();
-express_application.use( connect.logger('tiny') );
+express_application.use( morgan('tiny') );
 
 var storageEngine = pgStorage.createEngine( config.storage || {} );
 
-webApp.assemble( express_application, {
-	storage: storageEngine
-} );
+var scope = {
+	storage: storageEngine,
+	security: {}
+};
+security.assemble( scope.security, config );
+webApp.assemble( express_application, scope )
 
 var port = (config.http || {} ).port || 9000;
 express_application.listen( port, function(){
