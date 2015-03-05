@@ -4,11 +4,13 @@
 	"license": "Apache-2.0",
 	"version" : "0.2.0",
 	"dependencies" : {
-		"express" : "4.0.0",
-		"connect" : "2.14.4",
+		"body-parser" : "1.12.0",
+		"express" : "4.12.2",
+		"connect" : "3.3.4",
+		"morgan" : "1.5.1",
 		"passport" : "0.2.1",
-		"pg" : "3.4.0",
-		"yargs" : "1.2.6"
+		"pg" : "4.3.0",
+		"yargs" : "3.4.5"
 	},
 	"devDependencies" : {
 		"nodemon" : "1.0.17",

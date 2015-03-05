@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-var connect = require( "connect" );
+var express = require( "express" );
+var bodyParser = require( "body-parser" );
 
 function redirect( url ){
 	return function( request, response ){
@@ -137,7 +138,7 @@ function WebFacet( config ){
 function express_assembly( application, config ){
 	var context = config.context ? config.context : ""; 
 
-	var jsonBodyParser = connect.json();
+	var jsonBodyParser = bodyParser.json();
 
 	var facet = new WebFacet( config );
 
@@ -151,8 +152,8 @@ function express_assembly( application, config ){
 	application.delete( context + "/rest/records/:authority/rr/:oid", jsonBodyParser, facet.deleteResourceRecord );
 
 	application.get( context + "/status", redirect( "/status.html" ) ); 
-	application.use( context + "/bower", connect.static( "bower_components/" )  ); 
-	application.use( context, connect.static( "browser/" ) );
+	application.use( context + "/bower", express.static( "bower_components/" )  ); 
+	application.use( context, express.static( "browser/" ) );
 }
 
 exports.assemble = express_assembly;

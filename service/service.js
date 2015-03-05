@@ -17,6 +17,7 @@
  */
 var express = require( "express" );
 var connect = require( "connect" );
+var morgan = require( "morgan" );
 
 var pgStorage = require( __dirname + "/pg-storage" );
 var webApp = require( __dirname + "/web-application" );
@@ -41,7 +42,7 @@ var config = (function(){
  * Driving Application
  */
 var express_application = express();
-express_application.use( connect.logger('tiny') );
+express_application.use( morgan('tiny') );
 
 var storageEngine = pgStorage.createEngine( config.storage || {} );
 
