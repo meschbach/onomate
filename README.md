@@ -15,7 +15,7 @@ exports.storage = {
 	database: 'onomate-dev'
 }
 exports.http = {
-	port: 9000;
+	port: 9000
 }
 ```
 
