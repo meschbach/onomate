@@ -15,6 +15,19 @@
  */
 var express = require( "express" );
 var bodyParser = require( "body-parser" );
+var negotiator = require( "negotiator" );
+var path = require( "path" );
+
+function responds_with_spa( request, response, next ){
+	var desires = new negotiator( request );
+	var types = desires.mediaTypes();
+	if( types[0] == "text/html" ){
+		var name = path.resolve(__dirname, "../browser/wui/index.html");//TODO TOAD should calculate once
+		response.sendFile( name );
+	}else{
+		next();
+	}
+}
 
 function redirect( url ){
 	return function( request, response ){
@@ -143,6 +156,7 @@ function express_assembly( application, config ){
 	var facet = new WebFacet( config );
 
 	application.use( context, config.security.require_user );
+	application.use( context + "/wui", responds_with_spa );
 	application.get( context + "/rest/records", facet.listAuthorities );
 
 	application.get( context + "/rest/records/:authority", jsonBodyParser, facet.locateAuthority );
