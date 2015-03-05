@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Mark Eschbach
+ * Copyright 2014-2015 Mark Eschbach
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,6 +142,7 @@ function express_assembly( application, config ){
 
 	var facet = new WebFacet( config );
 
+	application.use( context, config.security.require_user );
 	application.get( context + "/rest/records", facet.listAuthorities );
 
 	application.get( context + "/rest/records/:authority", jsonBodyParser, facet.locateAuthority );
