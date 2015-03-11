@@ -289,7 +289,7 @@ onomate.controller('ZoneScreen', ["$scope", "$routeParams", "AuthorityZones", "$
 onomate.controller('CreateResourceRecord', ["$scope", function( $scope ){
 	$scope.record = {};
 
-	$scope.types = ["A", "CNAME", "NS"];
+	$scope.types = ["A", "CNAME", "NS", "PTR"];
 
 	$scope.addRR = function( ){
 		$scope.addResource( $scope.record );
