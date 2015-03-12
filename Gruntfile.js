@@ -16,6 +16,7 @@
 
 module.exports = function( grunt ){
 	var config = {
+		pkg: grunt.file.readJSON('package.json'),
 		bower: { install: { options: { copy: false, verbose: true } } },
 		contact : {},
 		migrate: {
@@ -30,5 +31,8 @@ module.exports = function( grunt ){
 	grunt.loadNpmTasks( "grunt-contrib-concat" );
 	grunt.loadNpmTasks( "grunt-contrib-uglify" );
 	grunt.loadNpmTasks( "grunt-bower-task" );
+	grunt.loadNpmTasks( "grunt-db-migrate" );
+
+	grunt.registerTask( "setup", ["bower:install", "migrate:up" ] );
 	grunt.registerTask( "default", [] );
 }
