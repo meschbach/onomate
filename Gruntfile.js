@@ -36,6 +36,13 @@ module.exports = function( grunt ){
 				dest: "browser/libs.css"
 			}
 		},
+		copy: {
+			fonts: {
+				files: [
+					{expand: true, cwd: 'bower_components/bootstrap/dist', src: ['fonts/*'], dest: "browser"}
+				]
+			}
+		},
 		migrate: {
 			options: {
 				verbose: true
@@ -49,10 +56,11 @@ module.exports = function( grunt ){
 	grunt.loadNpmTasks( "grunt-contrib-uglify" );
 	grunt.loadNpmTasks( "grunt-bower-task" );
 	grunt.loadNpmTasks( "grunt-db-migrate" );
+	grunt.loadNpmTasks( "grunt-contrib-copy" );
 
 	grunt.registerTask( "setup", ["bower:install", "migrate:up" ] );
 
-	grunt.registerTask( "build-libs", [ "concat:libjs", "concat:libcss" ] );
+	grunt.registerTask( "build-libs", [ "concat:libjs", "concat:libcss", "copy:fonts" ] );
 
 	grunt.registerTask( "default", [] );
 }

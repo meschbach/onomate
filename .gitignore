@@ -10,3 +10,4 @@ service/config.js
 /database.json
 npm-debug.log
 browser/libs.*
+browser/fonts

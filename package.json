@@ -25,7 +25,8 @@
 		"grunt-contrib-concat" : "0.5.1",
 		"grunt-contrib-uglify" : "0.8.0",
 		"grunt-db-migrate" : "0.2.0",
-		"grunt-bower-task" : "0.4.0"
+		"grunt-bower-task" : "0.4.0",
+		"grunt-contrib-copy" : "0.7.0"
 	},
 	"author" : {
 		"name" : "Mark Eschbach",
