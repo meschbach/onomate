@@ -1,6 +1,6 @@
 # Onomate - DNS Manager
 
-## Name 
+## Name
 In the words of my friend S.Simonton:
 "Onomate? Sounds like automate but refers to onomatology. Also it's yr mate like yr friend in naming things. Also yr question is so meta"
 
@@ -22,9 +22,11 @@ exports.http = {
 The configuration file is required(), so you may do whatever environment processing required to produce your configuration.  The storage options are passed directly to the pg library, and any options accepted by pg should be caccepted here.
 
 ### Startup
+Please see service/config.js for configuration examples.
+
 ```shell
 npm install
-./node_modules/.bin/bower install
+npm run setup
 node service/service.js --config service/config
 ```
 

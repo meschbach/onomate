@@ -8,3 +8,5 @@ tests/assembly/target/
 service/config.js
 /tests/systems/target/
 /database.json
+npm-debug.log
+browser/libs.*
