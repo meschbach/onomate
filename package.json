@@ -36,5 +36,8 @@
 		{ "name" : "Jeremy Tidwell",
 		"email" : "necanthrope@gmail.com"
 		}
-	]
+	],
+	"scripts" : {
+		"setup" : "./node_modules/.bin/grunt setup"
+	}
 }
