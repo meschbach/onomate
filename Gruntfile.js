@@ -18,7 +18,24 @@ module.exports = function( grunt ){
 	var config = {
 		pkg: grunt.file.readJSON('package.json'),
 		bower: { install: { options: { copy: false, verbose: true } } },
-		contact : {},
+		concat : {
+			libjs: {
+				src: [
+					"bower_components/angular/angular.js",
+					"bower_components/angular-resource/angular-resource.js",
+					"bower_components/angular-route/angular-route.js",
+					'bower_components/jquery/dist/jquery.js',
+					'bower_components/bootstrap/dist/js/bootstrap.js'
+				],
+				dest: "browser/libs.js"
+			},
+			libcss: {
+				src: [
+					"bower_components/bootstrap/dist/css/bootstrap.css"
+				],
+				dest: "browser/libs.css"
+			}
+		},
 		migrate: {
 			options: {
 				verbose: true
@@ -34,5 +51,8 @@ module.exports = function( grunt ){
 	grunt.loadNpmTasks( "grunt-db-migrate" );
 
 	grunt.registerTask( "setup", ["bower:install", "migrate:up" ] );
+
+	grunt.registerTask( "build-libs", [ "concat:libjs", "concat:libcss" ] );
+
 	grunt.registerTask( "default", [] );
 }
