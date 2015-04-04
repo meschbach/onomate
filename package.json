@@ -1,6 +1,7 @@
 {
 	"name": "onomate",
 	"description" : "DNS management console for PowerDNS",
+	"repository" : "meschbach/onomate",
 	"license": "Apache-2.0",
 	"version" : "0.2.0",
 	"dependencies" : {
