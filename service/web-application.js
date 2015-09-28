@@ -1,12 +1,12 @@
 /*
  * Copyright 2014-2015 Mark Eschbach
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -93,7 +93,7 @@ function WebFacet( config ){
 			response.json( zones );
 			response.end();
 		});
-	}.bind( this );
+	};
 
 	this.deleteAuthority = function( request, response ){
 		var domain = request.params.authority;
@@ -149,7 +149,7 @@ function WebFacet( config ){
 }
 
 function express_assembly( application, config ){
-	var context = config.context ? config.context : ""; 
+	var context = config.context ? config.context : "";
 
 	var jsonBodyParser = bodyParser.json();
 
@@ -166,8 +166,8 @@ function express_assembly( application, config ){
 	application.post( context + "/rest/records/:authority/rr", jsonBodyParser, facet.createResourceRecord );
 	application.delete( context + "/rest/records/:authority/rr/:oid", jsonBodyParser, facet.deleteResourceRecord );
 
-	application.get( context + "/status", redirect( "/status.html" ) ); 
-	application.use( context + "/bower", express.static( "bower_components/" )  ); 
+	application.get( context + "/status", redirect( "/status.html" ) );
+	application.use( context + "/bower", express.static( "bower_components/" )  );
 	application.use( context, express.static( "browser/" ) );
 }
 

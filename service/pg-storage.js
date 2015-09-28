@@ -1,12 +1,12 @@
 /*
- * Copyright 2014 Mark Eschbach
- * 
+ * Copyright 2014-2015 Mark Eschbach
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ function CreateAuthorityTask( config, record ){
 				connection.query( "INSERT INTO domains( \"name\", \"type\" ) SELECT $1::text, $2::text",
 					[ record.fqdn, 'SOA' ],
 					function( error, result ){
-						if( error ){ 
+						if( error ){
 							done();
 							self.emit( "error", error );
 						} else {
@@ -63,7 +63,7 @@ function ListAuthorities( config ){
 			}else{
 				connection.query( "SELECT name, content FROM records WHERE type = 'SOA'",
 					function( error, result ){
-						if( error ){ 
+						if( error ){
 							done();
 							self.emit( "error", error );
 						} else {
@@ -95,13 +95,13 @@ function LocateAuthority( config, fqdn ){
 	(function perform(){
 		pg.connect( config, function( error, connection, done ){
 			if( error ){
-				console.log( "Locate authority error", error); 
+				console.log( "Locate authority error", error);
 				self.emit('error', error);
 				done();
 				return;
 			}
 
-			connection.query( "SELECT content FROM records WHERE type = 'SOA' and name = $1::text", [fqdn], 
+			connection.query( "SELECT content FROM records WHERE type = 'SOA' and name = $1::text", [fqdn],
 				function( err, result ){
 					if( err ){
 						self.emit('error', error);
@@ -144,7 +144,7 @@ function DeleteAuthority( config, fqdn ){
 				connection.query( "DELETE FROM domains WHERE name = $1::text",
 					[ fqdn ],
 					function( error, result ){
-						if( error ){ 
+						if( error ){
 							done();
 							self.emit( "error", error );
 						} else {
@@ -173,13 +173,13 @@ function LocateZoneResources( config, fqdn ){
 	(function perform(){
 		pg.connect( config, function( error, connection, done ){
 			if( error ){
-				console.log( "Locate authority error", error); 
+				console.log( "Locate authority error", error);
 				self.emit('error', {what: error, when: 'obtaining connection', who: 'LocateZoneResources'});
 				done();
 				return;
 			}
 
-			connection.query( "SELECT records.id, records.name, records.type, content FROM records INNER JOIN domains ON records.domain_id = domains.id WHERE domains.name = $1::text AND records.type != 'SOA'", [fqdn], 
+			connection.query( "SELECT records.id, records.name, records.type, content FROM records INNER JOIN domains ON records.domain_id = domains.id WHERE domains.name = $1::text AND records.type != 'SOA'", [fqdn],
 				function( err, result ){
 					if( err ){
 						self.emit('error',{what: err, when: 'querying reosurces', who: 'LocateZoneResources'});
