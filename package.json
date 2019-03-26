@@ -13,7 +13,8 @@
 		"passport": "0.4.0",
 		"passport-http": "0.3.0",
 		"pg": "7.9.0",
-		"yargs": "13.2.2"
+		"yargs": "13.2.2",
+		"junk-bucket": "1.1.1"
 	},
 	"devDependencies": {
 		"nodemon": "1.18.10",
@@ -43,6 +44,6 @@
 	],
 	"scripts": {
 		"setup": "./node_modules/.bin/grunt setup",
-		"test" : "mocha service/tests/units"
+		"test": "mocha service/tests/units"
 	}
 }
