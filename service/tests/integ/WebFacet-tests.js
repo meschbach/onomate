@@ -17,7 +17,7 @@
 const {expect} = require("chai");
 
 //Utilities
-const Future = require("junk-bucket/Future");
+const Future = require("junk-bucket/future");
 
 class MockResponse {
 	constructor() {
