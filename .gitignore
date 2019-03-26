@@ -11,3 +11,4 @@ service/config.js
 npm-debug.log
 browser/libs.*
 browser/fonts
+package-lock.json
