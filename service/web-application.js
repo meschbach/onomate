@@ -172,3 +172,4 @@ function express_assembly( application, config ){
 }
 
 exports.assemble = express_assembly;
+exports.WebFacet = WebFacet;

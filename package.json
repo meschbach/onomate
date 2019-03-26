@@ -44,6 +44,6 @@
 	],
 	"scripts": {
 		"setup": "./node_modules/.bin/grunt setup",
-		"test": "mocha service/tests/units"
+		"test": "mocha service/tests/integ"
 	}
 }
