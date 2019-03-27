@@ -1,33 +1,49 @@
 /*
  * Copyright 2014 Mark Eschbach
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *     http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import angular from "angular";
+import "angular-resource";
+import "angular-route";
+import 'bootstrap/dist/css/bootstrap.css';
+
 var onomate = angular.module( "Onomate", [ "ngResource", "ngRoute" ]);
+
+onomate.directive("onomate", () => {
+	return {
+		template: require('./root.html'),
+		controller: 'RootController',
+		controllerAs: 'root'
+	}
+});
+onomate.controller("RootController", function() {
+
+});
 
 onomate.config(["$routeProvider", "$locationProvider", function( $routeProvider, $locationProvider ){
 	$locationProvider.html5Mode( true );
 	$routeProvider
 		.when('/authorities', {
-			templateUrl: 'authorities.html',
+			template: require('./authorities.html'),
 			controller: 'AuthoritiesScreen'
 		})
 		.when('/zone/:fqdn', {
-			templateUrl: 'zone.html',
+			template: require('./zone.html'),
 			controller: 'ZoneScreen'
 		})
 		.when('/about', {
-			templateUrl: 'about.html',
+			template: require('./about.html'),
 			controller: 'AboutScreen'
 		})
 		.otherwise({ redirectTo: '/authorities' });
@@ -35,10 +51,10 @@ onomate.config(["$routeProvider", "$locationProvider", function( $routeProvider,
 
 onomate.service( "Event", [ function( ){
 	function EventQueue(){
-		var listeners = []; 
+		var listeners = [];
 
 		function EventListener( target ){
-			
+
 			//TODO: In thoery this could jsut dispatch through
 			this.invoke = function( event ){
 				target( event );
@@ -97,13 +113,13 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 	var events = new Event.Multiplexer();
 	this.zones = [];
 
-	var StartOfAuthority = $resource('/rest/records/:fqdn', 
+	var StartOfAuthority = $resource('/rest/records/:fqdn',
 		{fqdn: '@fqdn'},
-			{'save': {method: 'put'}
-			});
+		{'save': {method: 'put'}
+		});
 	var ResourceRecord = $resource("/rest/records/:fqdn/rr/:oid",
 		{fqdn: '@fqdn', oid: '@oid' }
-			);
+	);
 
 	this.createZone = function( prototype ){
 		var zone = {
@@ -121,7 +137,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 			fqdn: zone.fqdn,
 			ns: zone.nameServer,
 			admin: zone.administrator
-		});	
+		});
 		record.$save( function(){
 			zone.state = 'Persisted';
 		} );
@@ -200,7 +216,7 @@ onomate.service( "AuthorityZones", [ "Event", "$resource", function AuthorityZon
 		dto.data = record.data;
 		dto.fqdn = record.zone;
 		dto.$save( function( response ){
-			record.oid = response.oid; 
+			record.oid = response.oid;
 			record.status = 'Persisted';
 		});
 	}
@@ -237,7 +253,7 @@ onomate.controller( "ZonesPresenter", [ "$scope", "AuthorityZones", function( $s
 	listen( authorities, 'deleted-zone', function( zone ){
 		$scope.zones = authorities.zones;
 	});
-	
+
 	authorities.loadZones();
 }]);
 

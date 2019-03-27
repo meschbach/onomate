@@ -12,7 +12,7 @@
 		"negotiator": "0.6.1",
 		"passport": "0.4.0",
 		"passport-http": "0.3.0",
-		"pg": "7.9.0",
+		"pg": "6.2.5",
 		"yargs": "13.2.2",
 		"junk-bucket": "1.1.1"
 	},

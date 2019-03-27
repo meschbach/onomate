@@ -52,7 +52,7 @@ var scope = {
 	security: {}
 };
 security.assemble( scope.security, config );
-webApp.assemble( express_application, scope )
+webApp.assemble( express_application, scope );
 
 var port = (config.http || {} ).port || 9000;
 express_application.listen( port, function(){
