@@ -1,3 +1,6 @@
+# Drepcated
+This was written a really long time ago.  There are many better alternatives.  Check out something like CoreDNS or Unbound with dyanmic backends.
+
 # Onomate - DNS Manager
 
 ## Name
